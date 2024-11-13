@@ -1,0 +1,18 @@
+{
+    "in_path": "/Users/giojacuzzi/Desktop/input",
+    "in_filetype": ".wav",
+    "out_dir_path": "/Users/giojacuzzi/Downloads/output",
+    "out_filetype": ".csv",
+    "retain_dir_tree": 1,
+    "source_labels_filepath": "/Users/giojacuzzi/repos/avian-bioacoustics-oesf/data/models/source/regional_species_list.txt",
+    "use_target_model": 1,
+    "target_model_filepath": "/Users/giojacuzzi/repos/avian-bioacoustics-oesf/data/models/target/custom_S1_N125_LR0.001_BS10_HU0_LSFalse_US0_I0/custom_S1_N125_LR0.001_BS10_HU0_LSFalse_US0_I0.tflite",
+    "target_labels_filepath": "/Users/giojacuzzi/repos/avian-bioacoustics-oesf/data/models/target/custom_S1_N125_LR0.001_BS10_HU0_LSFalse_US0_I0/custom_S1_N125_LR0.001_BS10_HU0_LSFalse_US0_I0_Labels.txt",
+    "use_ensemble": 1,
+    "ensemble_class_model_selections": "/Users/giojacuzzi/repos/avian-bioacoustics-oesf/data/models/ensemble/ensemble_class_model_selections.csv",
+    "n_processes": 8,
+    "n_separation": 1,
+    "min_confidence": 0.25,
+    "round": 3,
+    "retain_logit_score": 0
+}
