@@ -1,0 +1,124 @@
+Abiotic_Abiotic Aircraft
+Abiotic_Abiotic Logging
+Abiotic_Abiotic Rain
+Abiotic_Abiotic Vehicle
+Abiotic_Abiotic Wind
+Biotic_Biotic Anuran
+Biotic_Biotic Insect
+Corvus brachyrhynchos_American Crow
+Spinus tristis_American Goldfinch
+Falco sparverius_American Kestrel
+Setophaga ruticilla_American Redstart
+Turdus migratorius_American Robin
+Picoides dorsalis_American Three-toed Woodpecker
+Calypte anna_Anna's Hummingbird
+Haliaeetus leucocephalus_Bald Eagle
+Patagioenas fasciata_Band-tailed Pigeon
+Strix varia_Barred Owl
+Megaceryle alcyon_Belted Kingfisher
+Thryomanes bewickii_Bewick's Wren
+Cypseloides niger_Black Swift
+Poecile atricapillus_Black-capped Chickadee
+Pheucticus melanocephalus_Black-headed Grosbeak
+Setophaga nigrescens_Black-throated Gray Warbler
+Euphagus cyanocephalus_Brewer's Blackbird
+Certhia americana_Brown Creeper
+Molothrus ater_Brown-headed Cowbird
+Icterus bullockii_Bullock's Oriole
+Psaltriparus minimus_Bushtit
+Callipepla californica_California Quail
+Perisoreus canadensis_Canada Jay
+Haemorhous cassinii_Cassin's Finch
+Vireo cassinii_Cassin's Vireo
+Bombycilla cedrorum_Cedar Waxwing
+Poecile rufescens_Chestnut-backed Chickadee
+Spizella passerina_Chipping Sparrow
+Nucifraga columbiana_Clark's Nutcracker
+Corvus corax_Common Raven
+Geothlypis trichas_Common Yellowthroat
+Accipiter cooperii_Cooper's Hawk
+Junco hyemalis_Dark-eyed Junco
+Dryobates pubescens_Downy Woodpecker
+Empidonax oberholseri_Dusky Flycatcher
+Tyrannus tyrannus_Eastern Kingbird
+Sturnus vulgaris_European Starling
+Coccothraustes vespertinus_Evening Grosbeak
+Passerella iliaca_Fox Sparrow
+Aquila chrysaetos_Golden Eagle
+Regulus satrapa_Golden-crowned Kinglet
+Bubo virginianus_Great Horned Owl
+Dryobates villosus_Hairy Woodpecker
+Empidonax hammondii_Hammond's Flycatcher
+Catharus guttatus_Hermit Thrush
+Setophaga occidentalis_Hermit Warbler
+Haemorhous mexicanus_House Finch
+Passer domesticus_House Sparrow
+Troglodytes aedon_House Wren
+Vireo huttoni_Hutton's Vireo
+Chondestes grammacus_Lark Sparrow
+Passerina amoena_Lazuli Bunting
+Melanerpes lewis_Lewis's Woodpecker
+Melospiza lincolnii_Lincoln's Sparrow
+Asio otus_Long-eared Owl
+Geothlypis tolmiei_MacGillivray's Warbler
+Brachyramphus marmoratus_Marbled Murrelet
+Falco columbarius_Merlin
+Sialia currucoides_Mountain Bluebird
+Zenaida macroura_Mourning Dove
+Colaptes auratus_Northern Flicker
+Accipiter gentilis_Northern Goshawk
+Mimus polyglottos_Northern Mockingbird
+Glaucidium gnoma_Northern Pygmy-Owl
+Aegolius acadicus_Northern Saw-whet Owl
+Strix occidentalis_Spotted Owl
+Contopus cooperi_Olive-sided Flycatcher
+Leiothlypis celata_Orange-crowned Warbler
+Troglodytes pacificus_Pacific Wren
+Empidonax difficilis_Pacific-slope Flycatcher
+Falco peregrinus_Peregrine Falcon
+Dryocopus pileatus_Pileated Woodpecker
+Pinicola enucleator_Pine Grosbeak
+Spinus pinus_Pine Siskin
+Haemorhous purpureus_Purple Finch
+Loxia curvirostra_Red Crossbill
+Sitta canadensis_Red-breasted Nuthatch
+Sphyrapicus ruber_Red-breasted Sapsucker
+Vireo olivaceus_Red-eyed Vireo
+Sphyrapicus nuchalis_Red-naped Sapsucker
+Buteo jamaicensis_Red-tailed Hawk
+Agelaius phoeniceus_Red-winged Blackbird
+Phasianus colchicus_Ring-necked Pheasant
+Corthylio calendula_Ruby-crowned Kinglet
+Bonasa umbellus_Ruffed Grouse
+Selasphorus rufus_Rufous Hummingbird
+Artemisiospiza nevadensis_Sagebrush Sparrow
+Passerculus sandwichensis_Savannah Sparrow
+Sayornis saya_Say's Phoebe
+Accipiter striatus_Sharp-shinned Hawk
+Melospiza melodia_Song Sparrow
+Dendragapus fuliginosus_Sooty Grouse
+Pipilo maculatus_Spotted Towhee
+Cyanocitta stelleri_Steller's Jay
+Catharus ustulatus_Swainson's Thrush
+Myadestes townsendi_Townsend's Solitaire
+Setophaga townsendi_Townsend's Warbler
+Tachycineta bicolor_Tree Swallow
+Cathartes aura_Turkey Vulture
+Ixoreus naevius_Varied Thrush
+Chaetura vauxi_Vaux's Swift
+Pooecetes gramineus_Vesper Sparrow
+Tachycineta thalassina_Violet-green Swallow
+Vireo gilvus_Warbling Vireo
+Sialia mexicana_Western Bluebird
+Tyrannus verticalis_Western Kingbird
+Megascops kennicottii_Western Screech-Owl
+Piranga ludoviciana_Western Tanager
+Contopus sordidulus_Western Wood-Pewee
+Zonotrichia leucophrys_White-crowned Sparrow
+Lagopus leucura_White-tailed Ptarmigan
+Zonotrichia albicollis_White-throated Sparrow
+Loxia leucoptera_White-winged Crossbill
+Empidonax traillii_Willow Flycatcher
+Cardellina pusilla_Wilson's Warbler
+Setophaga petechia_Yellow Warbler
+Setophaga coronata_Yellow-rumped Warbler

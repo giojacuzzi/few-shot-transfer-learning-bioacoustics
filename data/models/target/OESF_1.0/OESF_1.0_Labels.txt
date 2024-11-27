@@ -1,0 +1,44 @@
+Abiotic_Abiotic Aircraft
+Abiotic_Abiotic Logging
+Abiotic_Abiotic Rain
+Abiotic_Abiotic Vehicle
+Abiotic_Abiotic Wind
+Aegolius acadicus_Northern Saw-whet Owl
+Biotic_Biotic Anuran
+Biotic_Biotic Insect
+Brachyramphus marmoratus_Marbled Murrelet
+Cardellina pusilla_Wilson's Warbler
+Catharus guttatus_Hermit Thrush
+Catharus ustulatus_Swainson's Thrush
+Colaptes auratus_Northern Flicker
+Contopus cooperi_Olive-sided Flycatcher
+Contopus sordidulus_Western Wood-pewee
+Corthylio calendula_Ruby-crowned Kinglet
+Corvus corax_Common Raven
+Dendragapus fuliginosus_Sooty Grouse
+Dryobates villosus_Hairy Woodpecker
+Dryocopus pileatus_Pileated Woodpecker
+Empidonax difficilis_Pacific-slope Flycatcher
+Empidonax hammondii_Hammond's Flycatcher
+Glaucidium californicum_Northern Pygmy-owl
+Haemorhous purpureus_Purple Finch
+Ixoreus naevius_Varied Thrush
+Junco hyemalis_Dark-eyed Junco
+Loxia curvirostra_Red Crossbill
+Megaceryle alcyon_Belted Kingfisher
+Megascops kennicottii_Western Screech-owl
+Melospiza melodia_Song Sparrow
+Patagioenas fasciata_Band-tailed Pigeon
+Pipilo maculatus_Spotted Towhee
+Piranga ludoviciana_Western Tanager
+Regulus satrapa_Golden-crowned Kinglet
+Selasphorus rufus_Rufous Hummingbird
+Setophaga nigrescens_Black-throated Gray Warbler
+Setophaga townsendi_Townsend's Warbler
+Sitta canadensis_Red-breasted Nuthatch
+Strix varia_Barred Owl
+Tachycineta thalassina_Violet-green Swallow
+Troglodytes pacificus_Pacific Wren
+Turdus migratorius_American Robin
+Vireo huttoni_Hutton's Vireo
+Zonotrichia leucophrys_White-crowned Sparrow

@@ -1,0 +1,125 @@
+Label	Weight_Source	Weight_Target
+Abiotic_Abiotic Aircraft	0.0	1.0
+Abiotic_Abiotic Logging	0.0	1.0
+Abiotic_Abiotic Rain	0.0	1.0
+Abiotic_Abiotic Vehicle	0.0	1.0
+Abiotic_Abiotic Wind	0.0	1.0
+Biotic_Biotic Anuran	0.0	1.0
+Biotic_Biotic Insect	0.0	1.0
+Corvus brachyrhynchos_American Crow	1.0	0.0
+Spinus tristis_American Goldfinch	1.0	0.0
+Falco sparverius_American Kestrel	1.0	0.0
+Setophaga ruticilla_American Redstart	1.0	0.0
+Turdus migratorius_American Robin	0.0	1.0
+Picoides dorsalis_American Three-toed Woodpecker	1.0	0.0
+Calypte anna_Anna's Hummingbird	1.0	0.0
+Haliaeetus leucocephalus_Bald Eagle	1.0	0.0
+Patagioenas fasciata_Band-tailed Pigeon	0.0	1.0
+Strix varia_Barred Owl	0.0	1.0
+Megaceryle alcyon_Belted Kingfisher	1.0	0.0
+Thryomanes bewickii_Bewick's Wren	1.0	0.0
+Cypseloides niger_Black Swift	1.0	0.0
+Poecile atricapillus_Black-capped Chickadee	1.0	0.0
+Pheucticus melanocephalus_Black-headed Grosbeak	1.0	0.0
+Setophaga nigrescens_Black-throated Gray Warbler	0.0	1.0
+Euphagus cyanocephalus_Brewer's Blackbird	1.0	0.0
+Certhia americana_Brown Creeper	1.0	0.0
+Molothrus ater_Brown-headed Cowbird	1.0	0.0
+Icterus bullockii_Bullock's Oriole	1.0	0.0
+Psaltriparus minimus_Bushtit	1.0	0.0
+Callipepla californica_California Quail	1.0	0.0
+Perisoreus canadensis_Canada Jay	1.0	0.0
+Haemorhous cassinii_Cassin's Finch	1.0	0.0
+Vireo cassinii_Cassin's Vireo	1.0	0.0
+Bombycilla cedrorum_Cedar Waxwing	1.0	0.0
+Poecile rufescens_Chestnut-backed Chickadee	1.0	0.0
+Spizella passerina_Chipping Sparrow	1.0	0.0
+Nucifraga columbiana_Clark's Nutcracker	1.0	0.0
+Corvus corax_Common Raven	0.0	1.0
+Geothlypis trichas_Common Yellowthroat	1.0	0.0
+Accipiter cooperii_Cooper's Hawk	1.0	0.0
+Junco hyemalis_Dark-eyed Junco	0.0	1.0
+Dryobates pubescens_Downy Woodpecker	1.0	0.0
+Empidonax oberholseri_Dusky Flycatcher	1.0	0.0
+Tyrannus tyrannus_Eastern Kingbird	1.0	0.0
+Sturnus vulgaris_European Starling	1.0	0.0
+Coccothraustes vespertinus_Evening Grosbeak	1.0	0.0
+Passerella iliaca_Fox Sparrow	1.0	0.0
+Aquila chrysaetos_Golden Eagle	1.0	0.0
+Regulus satrapa_Golden-crowned Kinglet	0.0	1.0
+Bubo virginianus_Great Horned Owl	1.0	0.0
+Dryobates villosus_Hairy Woodpecker	0.0	1.0
+Empidonax hammondii_Hammond's Flycatcher	1.0	0.0
+Catharus guttatus_Hermit Thrush	0.0	1.0
+Setophaga occidentalis_Hermit Warbler	1.0	0.0
+Haemorhous mexicanus_House Finch	1.0	0.0
+Passer domesticus_House Sparrow	1.0	0.0
+Troglodytes aedon_House Wren	1.0	0.0
+Vireo huttoni_Hutton's Vireo	0.0	1.0
+Chondestes grammacus_Lark Sparrow	1.0	0.0
+Passerina amoena_Lazuli Bunting	1.0	0.0
+Melanerpes lewis_Lewis's Woodpecker	1.0	0.0
+Melospiza lincolnii_Lincoln's Sparrow	1.0	0.0
+Asio otus_Long-eared Owl	1.0	0.0
+Geothlypis tolmiei_MacGillivray's Warbler	1.0	0.0
+Brachyramphus marmoratus_Marbled Murrelet	0.0	1.0
+Falco columbarius_Merlin	1.0	0.0
+Sialia currucoides_Mountain Bluebird	1.0	0.0
+Zenaida macroura_Mourning Dove	1.0	0.0
+Colaptes auratus_Northern Flicker	0.0	1.0
+Accipiter gentilis_Northern Goshawk	1.0	0.0
+Mimus polyglottos_Northern Mockingbird	1.0	0.0
+Glaucidium gnoma_Northern Pygmy-Owl	0.0	1.0
+Aegolius acadicus_Northern Saw-whet Owl	0.0	1.0
+Strix occidentalis_Spotted Owl	1.0	0.0
+Contopus cooperi_Olive-sided Flycatcher	0.0	1.0
+Leiothlypis celata_Orange-crowned Warbler	1.0	0.0
+Troglodytes pacificus_Pacific Wren	0.0	1.0
+Empidonax difficilis_Pacific-slope Flycatcher	0.0	1.0
+Falco peregrinus_Peregrine Falcon	1.0	0.0
+Dryocopus pileatus_Pileated Woodpecker	0.0	1.0
+Pinicola enucleator_Pine Grosbeak	1.0	0.0
+Spinus pinus_Pine Siskin	1.0	0.0
+Haemorhous purpureus_Purple Finch	0.0	1.0
+Loxia curvirostra_Red Crossbill	0.0	1.0
+Sitta canadensis_Red-breasted Nuthatch	1.0	0.0
+Sphyrapicus ruber_Red-breasted Sapsucker	1.0	0.0
+Vireo olivaceus_Red-eyed Vireo	1.0	0.0
+Sphyrapicus nuchalis_Red-naped Sapsucker	1.0	0.0
+Buteo jamaicensis_Red-tailed Hawk	1.0	0.0
+Agelaius phoeniceus_Red-winged Blackbird	1.0	0.0
+Phasianus colchicus_Ring-necked Pheasant	1.0	0.0
+Corthylio calendula_Ruby-crowned Kinglet	1.0	0.0
+Bonasa umbellus_Ruffed Grouse	1.0	0.0
+Selasphorus rufus_Rufous Hummingbird	1.0	0.0
+Artemisiospiza nevadensis_Sagebrush Sparrow	1.0	0.0
+Passerculus sandwichensis_Savannah Sparrow	1.0	0.0
+Sayornis saya_Say's Phoebe	1.0	0.0
+Accipiter striatus_Sharp-shinned Hawk	1.0	0.0
+Melospiza melodia_Song Sparrow	0.0	1.0
+Dendragapus fuliginosus_Sooty Grouse	0.0	1.0
+Pipilo maculatus_Spotted Towhee	1.0	0.0
+Cyanocitta stelleri_Steller's Jay	1.0	0.0
+Catharus ustulatus_Swainson's Thrush	0.0	1.0
+Myadestes townsendi_Townsend's Solitaire	1.0	0.0
+Setophaga townsendi_Townsend's Warbler	0.0	1.0
+Tachycineta bicolor_Tree Swallow	1.0	0.0
+Cathartes aura_Turkey Vulture	1.0	0.0
+Ixoreus naevius_Varied Thrush	0.0	1.0
+Chaetura vauxi_Vaux's Swift	1.0	0.0
+Pooecetes gramineus_Vesper Sparrow	1.0	0.0
+Tachycineta thalassina_Violet-green Swallow	1.0	0.0
+Vireo gilvus_Warbling Vireo	1.0	0.0
+Sialia mexicana_Western Bluebird	1.0	0.0
+Tyrannus verticalis_Western Kingbird	1.0	0.0
+Megascops kennicottii_Western Screech-Owl	0.0	1.0
+Piranga ludoviciana_Western Tanager	0.0	1.0
+Contopus sordidulus_Western Wood-Pewee	1.0	0.0
+Zonotrichia leucophrys_White-crowned Sparrow	0.0	1.0
+Lagopus leucura_White-tailed Ptarmigan	1.0	0.0
+Zonotrichia albicollis_White-throated Sparrow	1.0	0.0
+Loxia leucoptera_White-winged Crossbill	1.0	0.0
+Empidonax traillii_Willow Flycatcher	1.0	0.0
+Cardellina pusilla_Wilson's Warbler	0.0	1.0
+Setophaga petechia_Yellow Warbler	1.0	0.0
+Setophaga coronata_Yellow-rumped Warbler	1.0	0.0
