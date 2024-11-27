@@ -6,17 +6,17 @@ from multiprocessing import freeze_support
 import argparse
 from misc import log
 import sys
-import subprocess
-import pathlib
 import pandas as pd
 import os
 import shutil
+import time
 
 # Add BirdNET-Analyzer to the Python path
-print('process_audio.py')
+# print('process_audio.py')
 birdnet_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'submodules', 'BirdNET-Analyzer'))
 if birdnet_path not in sys.path:
     print(f'Adding BirdNET-Analyzer to sys.path {birdnet_path}')
+    print('Please wait...')
     sys.path.append(birdnet_path)
 from analyze import *
 import config as cfg
@@ -39,14 +39,10 @@ def process(
         threads        = 8,
         cleanup        = True
 ):
-    log.print_success('START process_audio.process')
-
     out_dir_path = os.path.join(out_dir_path, 'predictions')
 
     if target_model_filepath == 'None':
         target_model_filepath = None
-
-    apple()
 
     # Reset config defaults for repeat processes
     cfg.LABELS_FILE = "checkpoints/V2.4/BirdNET_GLOBAL_6K_V2.4_Labels.txt"
@@ -55,30 +51,25 @@ def process(
     models = []
     model_tags = []
 
-    print(f'use_ensemble {use_ensemble}')
-    print(f'target_model_filepath {target_model_filepath}')
-
     if use_ensemble and (target_model_filepath == None):
         log.print_error("Target model required for ensemble")
         return
 
     if (target_model_filepath == None) or use_ensemble:
-        print('append None')
         models.append(None)
         model_tags.append('source')
         model = 'source'
 
     if (target_model_filepath != None) or use_ensemble:
-        print('append target')
         models.append(target_model_filepath)
         model_tags.append('target')
-    
-    print(f'models to enumerate {models}')
 
     # For each requested model, analyze all files
     for i, model in enumerate(models):
         model_tag = model_tags[i]
-        log.print_success(f"Analyzing with {model_tag} model...")
+        print(f"Processing predictions for {in_path} with {model_tag} model...")
+
+        time_start = time.time()
 
         if use_ensemble:
             working_out_dir_path = os.path.join(out_dir_path, 'temp', model_tag)
@@ -106,7 +97,7 @@ def process(
         analyze_main_wrapper(args, birdnet_path)
     
     if use_ensemble:
-        log.print_success('Calculating ensemble predictions...')
+        print('Calculating ensemble predictions...')
         source_dir = os.path.join(out_dir_path, 'temp', 'source')
         target_dir = os.path.join(out_dir_path, 'temp', 'target')
 
@@ -119,7 +110,7 @@ def process(
             extension = 'csv'
 
         for rel_path in get_relative_paths(source_dir, extension):
-            print(f'rel_path {rel_path}')
+            # print(f'rel_path {rel_path}')
 
             source_file = os.path.join(source_dir, rel_path)
             target_file = os.path.join(target_dir, rel_path)
@@ -144,7 +135,7 @@ def process(
                 shared_cols = list(predictions_source.columns)
                 shared_cols.remove('Confidence')
                 predictions_ensemble = pd.merge(predictions_source, predictions_target, on=shared_cols, how='outer', suffixes=('_source', '_target'))
-                print(f'predictions_ensemble {predictions_ensemble}')
+                # print(f'predictions_ensemble {predictions_ensemble}')
 
                 # Calculate ensemble confidence
                 predictions_ensemble = pd.merge(predictions_ensemble, weights, on='Common Name', how='left')
@@ -168,13 +159,15 @@ def process(
                     predictions_ensemble = predictions_ensemble[col_order]
                     predictions_ensemble = predictions_ensemble.rename(columns={'Common Name': 'Common name'})
                     predictions_ensemble.to_csv(result_file, index=False)
-                print(f'final predictions_ensemble {predictions_ensemble}')
             else:
                 log.print_warning(f"Matching file not found for {rel_path} in target directory.")
         if cleanup:
             shutil.rmtree(os.path.join(out_dir_path, 'temp'))
 
-    log.print_success('END process_audio.process')
+    time_end = time.time()
+    time_elapsed = (time_end - time_start)/60.0
+
+    log.print_success(f'Finished processing predictions ({time_elapsed:.2f} min)')
 
     return
 
@@ -187,7 +180,9 @@ def segment(
     seg_length,
     threads
 ):
-    log.print_success(f'START segment in_predictions_path {in_predictions_path}')
+    print(f'Extracting audio segments from {in_audio_path} with predictions {in_predictions_path}')
+
+    time_start = time.time()
 
     args = argparse.Namespace(
         audio=in_audio_path,
@@ -200,7 +195,10 @@ def segment(
     )
     segments_main_wrapper(args)
 
-    log.print_success('END segment')
+    time_end = time.time()
+    time_elapsed = (time_end - time_start)/60.0
+
+    log.print_success(f'Finished extracting audio segments ({time_elapsed:.2f} min)')
 
 
 def main(args):

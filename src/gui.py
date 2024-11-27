@@ -6,7 +6,6 @@ import asyncio
 import threading
 import os
 import subprocess
-import multiprocessing
 import tempfile
 import time
 import json
@@ -18,19 +17,7 @@ import process_audio
 from multiprocessing import freeze_support
 import time
 
-print('gui.py')
-
-# Define the task
-def task(result_queue):
-    print("Task started...")
-    time.sleep(5)  # Simulate a long-running task
-    print("Task finished!")
-    result_queue.put("Task result")  # Put the result in the queue
-
-# Define the callback function
-def on_task_complete(result_queue):
-    result = result_queue.get()  # Retrieve the result from the queue
-    print(f"Callback: The task completed with result: {result}")
+# print('gui.py')
 
 class Spinbox(customtkinter.CTkFrame):
     def __init__(self, *args,
@@ -128,7 +115,6 @@ def float_to_str(value: float, step_size: float):
     digits = len(str(step_size).split('.')[-1])
     return(f"{round(value, digits):.{digits}f}")
 
-### DEBUG
 class ConsoleRedirector:
     def __init__(self, textbox):
         self.textbox = textbox
@@ -155,35 +141,6 @@ class ConsoleRedirector:
         
     def flush(self):
         pass # handle flush calls from the print function
-
-def launch_terminal_process(working_dir, python_path, script_path, arguments, callback):
-
-    done_signal_file = tempfile.NamedTemporaryFile(delete=False)
-    done_signal_path = done_signal_file.name
-    done_signal_file.close()
-    command = (
-        f'osascript'
-        f' -e \'tell application "Terminal" to activate\''
-        f' -e \'tell application "Terminal" to do script '
-        f'"'
-            f'echo \\"Navigating directories...\\" && '
-            f'cd \\"{os.path.abspath(working_dir)}\\" && '
-            f'ls && '
-            f'echo \\"Launching console process, please wait...\\" && '
-            f'{os.path.abspath(python_path)} \\"{script_path}\\" {arguments}; '
-            f'rm \\"{done_signal_path}\\" '
-        f'"\''
-    )
-    subprocess.run(command, shell=True)
-    while os.path.exists(done_signal_path):
-        time.sleep(1)
-    callback()
-
-def on_process_finish():
-    print('on_process_finish callback')
-
-customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
 
 class App(TkinterDnD.Tk):
     def __init__(self):
@@ -521,94 +478,19 @@ class App(TkinterDnD.Tk):
     # Options callbacks
     def callback_checkbox_retain_logit_score(self):
         return
-        # print("callback_checkbox_retain_logit_score:", self.retain_logit_score.get())
 
-    # Other callbacks
+    # Process callbacks
     def callback_button_launch_process(self):
-        # print('button_callback START')
-        # print(f'{sys._MEIPASS}')
-        # in_path = self.entry_in_path.get()
-        # in_filetype = self.option_in_filetype.get()
-        # out_dir_path = self.entry_out_dir_path.get()
-        # out_filetype = self.option_out_filetype.get()
-        # retain_dir_tree = self.retain_dir_tree.get()
-        # class_labels_filepath = self.entry_class_labels_filepath.get()
-        # target_model_filepath = self.entry_target_model_filepath.get()
-        # target_labels_filepath = self.entry_target_labels_filepath.get()
-        # use_ensemble = self.use_ensemble.get()
-        # ensemble_weights = self.entry_ensemble_weights.get()
-        # min_confidence = self.spinbox_min_confidence.get()
-        # retain_logit_score = self.retain_logit_score.get()
-        # threads = self.spinbox_threads.get()
-        # n_separation = self.spinbox_n_separation.get()
-        # round = self.spinbox_seglength.get()
-
-        # DEBUG
-        # exec(open('mango.py').read())
-
-        # # exec(open('src/run_process_audio_script.py').read())
-        # process_audio.process_file_or_dir(
-        #     in_path                         = in_path,
-        #     in_filetype                     = in_filetype,
-        #     out_dir_path                    = out_dir_path,
-        #     retain_dir_tree                 = retain_dir_tree,
-        #     target_model_filepath           = target_model_filepath,
-        #     class_labels_filepath          = class_labels_filepath,
-        #     target_labels_filepath          = target_labels_filepath,
-        #     use_ensemble                    = use_ensemble,
-        #     ensemble_weights = ensemble_weights,
-        #     min_confidence                  = min_confidence,
-        #     retain_logit_score              = retain_logit_score,
-        #     threads                     = threads,
-        #     num_separation                  = n_separation,
-        #     cleanup                         = True,
-        #     sort_by                         = ['start_time', 'confidence'],
-        #     ascending                       = [True, False],
-        #     out_filetype                    = out_filetype,
-        #     digits                          = round
-        # )
-
-        # launch_terminal_process(
-        #     working_dir="",
-        #     python_path=".venv/bin/python", # ".venv/bin/python"
-        #     script_path="src/run_process_audio_script.py",
-        #     arguments=" ".join([
-        #         in_path,
-        #         in_filetype,
-        #         out_dir_path,
-        #         out_filetype,
-        #         "--retain_dir_tree" if retain_dir_tree else "",
-        #         "--class_labels_filepath", class_labels_filepath,
-        #         "--target_model_filepath", target_model_filepath,
-        #         "--target_labels_filepath", target_labels_filepath,
-        #         "--use_ensemble" if use_ensemble else "",
-        #         "--ensemble_weights", ensemble_weights,
-        #         "--min_confidence", str(min_confidence),
-        #         "--retain_logit_score" if retain_logit_score else "",
-        #         "--threads", str(threads),
-        #         "--n_separation", str(n_separation),
-        #         "--digits", str(round)
-        #     ]),
-        #     callback=on_process_finish
-        # )
         self.create_await_funct()
-        # print('button_callback END')
     
     def create_await_funct(self):
         threading.Thread(target=lambda loop: loop.run_until_complete(self.await_funct()),
                          args=(asyncio.new_event_loop(),)).start()
-        # self.button_launch_process["relief"] = "sunken"
-        # self.button_launch_process["state"] = "disabled"
         self.button_launch_process.configure(text = "Processing...", state="disabled")
         self.progressbar.configure(mode="indeterminate")
         self.progressbar.start()
-        # self.progressbar.set(0.0)
-        # self.console_textbox.insert(customtkinter.END,"Launching console process, please wait...\n")
 
     async def await_funct(self):
-        # self.testfield["text"] = "start waiting"
-        # self.console_textbox.insert(customtkinter.END,"Launching console process, please wait...\n")
-        print('Launching console process, please wait...')
         self.update_idletasks()
 
         in_path = self.entry_in_path.get()
@@ -621,7 +503,6 @@ class App(TkinterDnD.Tk):
         class_labels_filepath = self.entry_class_labels_filepath.get()
         
         model_selection = self.seg_button_model_selection.get()
-        print(f'model_selection {model_selection}')
         if model_selection == "Source":
             target_model_filepath = None
             use_ensemble = False
@@ -641,7 +522,6 @@ class App(TkinterDnD.Tk):
         calc_predictions = self.switch_calc_predictions.get()
 
         if calc_predictions:
-            print('Calling process_audio.process')
             process_audio.process(
                 in_path                         = in_path,
                 out_dir_path                    = out_dir_path,
@@ -658,7 +538,6 @@ class App(TkinterDnD.Tk):
         seglength = self.spinbox_seglength.get()
 
         if extract_segments:
-            print('Calling process_audio.segment')
             process_audio.segment(
                 in_audio_path = in_path,
                 in_predictions_path = os.path.join(out_dir_path, 'predictions'),
@@ -669,38 +548,22 @@ class App(TkinterDnD.Tk):
                 threads = threads
             )
 
-        # DEBUG
-        # exec(open('mango.py').read())
-
-        # pear()
-
-        # await asyncio.sleep(5)
-
-        # self.console_textbox.insert(customtkinter.END,"end waiting\n")
         self.update_idletasks()
 
-        # await asyncio.sleep(1)
-
-        # self.testfield["text"] = "output"
-        # self.root.update_idletasks()
         self.button_launch_process.configure(text = "Launch process", state="normal")
         self.progressbar.stop()
         self.progressbar.configure(mode="determinate")
         self.progressbar.set(1.0)
-        # self.button_launch_process["state"] = "normal"
-        # print('Finished console process')
         print('')
 
 if __name__ == "__main__":
-    print('Launching gui...')
+    
     freeze_support() # Freeze support for executable
 
-    # Add BirdNET-Analyzer to the Python path
-    # birdnet_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'submodules', 'BirdNET-Analyzer'))
-    # if birdnet_path not in sys.path:
-    #     sys.path.append(birdnet_path)
-    # from analyze import *
-    # mango()
+    print('Launching gui...')
+
+    customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
+    customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
 
     app = App()
     app.mainloop()

@@ -32,7 +32,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-This installs all dependencies you need to run, for example,`src/gui.py` or `src/process_audio.py`. For further reference, see setup instructions for [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer) and [birdnetlib](https://github.com/joeweiss/birdnetlib) if needed.
+This installs all required dependencies. For troubleshooting reference, see setup instructions for [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer).
 
 ## Contents
 - `data` – data associated with the study area and project
@@ -44,7 +44,7 @@ This installs all dependencies you need to run, for example,`src/gui.py` or `src
     - `utils` – logging and helper modules
 
 ## Audio classification with BirdNET and/or custom model
-Run `src/process_audio.py` to process model predictions for a given directory or file. Show arguments with `python src/process_audio.py -h`, or see the script directly.
+Run `src/process_audio.py` to process model predictions for a given directory or file. Show arguments with `python src/process_audio.py -h`, or see the script code directly.
 
 Alternatively, run the graphical user interface application at `src/gui.py` (see details below).
 
