@@ -1,0 +1,4 @@
+[submodule "src/submodules/BirdNET-Analyzer"]
+	path = src/submodules/BirdNET-Analyzer
+	url = https://github.com/giojacuzzi/BirdNET-Analyzer
+	branch = few-shot-transfer-learning-bioacoustics

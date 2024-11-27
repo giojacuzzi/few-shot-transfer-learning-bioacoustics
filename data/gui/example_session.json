@@ -5,7 +5,7 @@
     "calc_predictions": 1,
     "extract_segments": 1,
     "class_labels_filepath": "/Users/giojacuzzi/repos/few-shot-transfer-learning-bioacoustics/data/models/ensemble/ensemble_species_list.txt",
-    "model_selection": "Source",
+    "model_selection": "Ensemble",
     "target_model_filepath": "/Users/giojacuzzi/repos/few-shot-transfer-learning-bioacoustics/data/models/target/OESF_1.0/OESF_1.0.tflite",
     "ensemble_weights": "/Users/giojacuzzi/repos/few-shot-transfer-learning-bioacoustics/data/models/ensemble/ensemble_weights.txt",
     "threads": 8,

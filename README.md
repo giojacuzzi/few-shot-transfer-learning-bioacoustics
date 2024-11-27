@@ -34,16 +34,6 @@ pip install -r requirements.txt
 
 This installs all dependencies you need to run, for example,`src/gui.py` or `src/process_audio.py`. For further reference, see setup instructions for [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer) and [birdnetlib](https://github.com/joeweiss/birdnetlib) if needed.
 
-### Optional: Sound separation dependencies
-
-This repository has a fork of [bird_mixit](https://github.com/google-research/sound-separation/tree/master/models/bird_mixit) as a submodule, which is used to perform sound separation.
-1. Follow steps to install [gsutil](https://cloud.google.com/storage/docs/gsutil_install)
-1. Install bird_mixit model checkpoints via a terminal shell (see below)
-
-```
-gsutil -m cp -r gs://gresearch/sound_separation/bird_mixit_model_checkpoints data/models/
-```
-
 ## Contents
 - `data` – data associated with the study area and project
 - `src` – all source code for data annotation, processing, and analysis
