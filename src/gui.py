@@ -152,7 +152,7 @@ class App(TkinterDnD.Tk):
         self.use_target_model = customtkinter.IntVar(self, 1)
         self.use_ensemble = customtkinter.IntVar(self, 1)
 
-        self.title("Acoustic classifier model interface")
+        self.title("Bioacoustic Model Ensemble Interface")
         self.geometry("1180x600")
 
         menu = CTkMenuBar(master=self, bg_color='#222222')
@@ -237,7 +237,7 @@ class App(TkinterDnD.Tk):
         self.switch_calc_predictions = customtkinter.CTkSwitch(self.frame_process, variable=self.use_target_model, onvalue=1, offvalue=0, command=self.callback_switch_calc_predictions, text='Calculate predictions')
         self.switch_calc_predictions.select()
         self.switch_calc_predictions.pack(side='left', padx=10, pady=5)
-        self.option_out_filetype = customtkinter.CTkOptionMenu(self.frame_process, dynamic_resizing=True, values=['csv', 'Raven'])
+        self.option_out_filetype = customtkinter.CTkOptionMenu(self.frame_process, dynamic_resizing=True, values=['csv', 'Raven table'])
         self.option_out_filetype.pack(side='left', padx=10, pady=5)
         self.switch_extract_segments = customtkinter.CTkSwitch(self.frame_process, variable=self.extract_segments, onvalue=1, offvalue=0, command=self.callback_switch_extract_segments, text='Extract audio segments')
         self.switch_extract_segments.select()
@@ -497,7 +497,7 @@ class App(TkinterDnD.Tk):
         out_dir_path = self.entry_out_dir_path.get()
 
         out_filetype = self.option_out_filetype.get()
-        if out_filetype == "Raven":
+        if out_filetype == "Raven table":
             out_filetype = "table"
 
         class_labels_filepath = self.entry_class_labels_filepath.get()
@@ -525,6 +525,7 @@ class App(TkinterDnD.Tk):
             process_audio.process(
                 in_path                         = in_path,
                 out_dir_path                    = out_dir_path,
+                rtype                           = out_filetype,
                 target_model_filepath           = target_model_filepath,
                 slist                           = class_labels_filepath, 
                 use_ensemble                    = use_ensemble,

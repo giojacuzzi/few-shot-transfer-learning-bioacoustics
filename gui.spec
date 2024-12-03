@@ -21,7 +21,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='gui',
+    name='Model Ensemble Interface',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

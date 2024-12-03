@@ -31,6 +31,7 @@ def get_relative_paths(root, extension):
 def process(
         in_path, # path to a file or directory
         out_dir_path        = '',
+        rtype = 'csv',
         target_model_filepath = None,
         slist = None,
         use_ensemble = False,
@@ -84,7 +85,7 @@ def process(
             sensitivity=1.0,
             min_conf=min_confidence,
             overlap=0.0,
-            rtype='csv', #'table',
+            rtype=rtype,
             output_file=None,
             threads=threads,
             batchsize=1,
@@ -271,11 +272,11 @@ if __name__ == "__main__":
         # Define default values
         args = parser.parse_args([
             "/Users/giojacuzzi/Desktop/input",
-            "/Users/giojacuzzi/Downloads/output",
-            "--slist", "data/models/ensemble/ensemble_species_list.txt",
-            "--target_model_filepath",  "data/models/target/OESF_1.0/OESF_1.0.tflite",
+            "/Users/giojacuzzi/Desktop/output",
+            "--slist", "models/ensemble/ensemble_species_list.txt",
+            "--target_model_filepath",  "models/target/OESF_1.0/OESF_1.0.tflite",
             "--use_ensemble",
-            "--ensemble_weights", "data/models/ensemble/ensemble_weights.txt",
+            "--ensemble_weights", "models/ensemble/ensemble_weights.txt",
             "--min_confidence", "0.5",
             "--threads", "8"
             # "--cleanup"
