@@ -497,8 +497,10 @@ class App(TkinterDnD.Tk):
         out_dir_path = self.entry_out_dir_path.get()
 
         out_filetype = self.option_out_filetype.get()
+        extension = out_filetype
         if out_filetype == "Raven table":
             out_filetype = "table"
+            extension = "txt"
 
         class_labels_filepath = self.entry_class_labels_filepath.get()
         
@@ -542,6 +544,7 @@ class App(TkinterDnD.Tk):
             process_audio.segment(
                 in_audio_path = in_path,
                 in_predictions_path = os.path.join(out_dir_path, 'predictions'),
+                extension = extension,
                 out_dir_path = os.path.join(out_dir_path, 'segments'),
                 min_conf = min_confidence,
                 max_segments = 28800, # number of 3-second segments in 24 hours

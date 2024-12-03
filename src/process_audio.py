@@ -27,6 +27,14 @@ def get_relative_paths(root, extension):
     return [os.path.relpath(os.path.join(dp, f), root)
             for dp, dn, filenames in os.walk(root) for f in filenames if f.endswith(f'.{extension}')]
 
+def get_rel_dirs_with_files(root_dir, extension):
+    extension = f'.{extension}'
+    dirs = set()
+    for dir, _, filenames in os.walk(root_dir):
+        if any(file.endswith(extension) for file in filenames):
+            dirs.add(os.path.relpath(dir, root_dir))
+    return dirs
+
 # Wrapper for audio.process_audio process_file_or_dir
 def process(
         in_path, # path to a file or directory
@@ -176,6 +184,7 @@ def process(
 def segment(
     in_audio_path,
     in_predictions_path,
+    extension,
     out_dir_path,
     min_conf,
     max_segments,
@@ -186,20 +195,22 @@ def segment(
         log.print_error('Input audio, predictions, and output paths must be specified to extract audio segments')
         return
 
-    print(f'Extracting audio segments from {in_audio_path} with predictions {in_predictions_path}')
-
     time_start = time.time()
 
-    args = argparse.Namespace(
-        audio=in_audio_path,
-        results=in_predictions_path,
-        o=out_dir_path,
-        min_conf=min_conf,
-        max_segments=max_segments,
-        seg_length=seg_length,
-        threads=threads
-    )
-    segments_main_wrapper(args)
+    rel_dirs = get_rel_dirs_with_files(in_predictions_path, extension)
+    for dir in rel_dirs:
+        print(f'Extracting audio segments from {dir}')
+
+        args = argparse.Namespace(
+            audio=in_audio_path,
+            results=os.path.join(in_predictions_path, dir),
+            o=os.path.join(out_dir_path, dir),
+            min_conf=min_conf,
+            max_segments=max_segments,
+            seg_length=seg_length,
+            threads=threads
+        )
+        segments_main_wrapper(args)
 
     time_end = time.time()
     time_elapsed = (time_end - time_start)/60.0
@@ -222,9 +233,14 @@ def main(args):
         cleanup                         = True
     )
 
+    extension = args.out_filetype
+    if extension == "table":
+        extension = "txt"
+
     segment(
         in_audio_path = args.in_path,
-        in_predictions_path = args.out_path_predictions,
+        in_predictions_path = os.path.join(args.out_path_predictions, 'predictions'),
+        extension = extension,
         out_dir_path = os.path.join(args.out_path_predictions, 'segments'),
         min_conf = args.min_confidence,
         max_segments = 28800, # number of 3-second segments in 24 hours
@@ -257,7 +273,7 @@ if __name__ == "__main__":
         args = parser.parse_args([
             "/Users/giojacuzzi/Desktop/input",
             "/Users/giojacuzzi/Desktop/output",
-            "--out_filetype", "table",
+            "--out_filetype", "csv",
             "--slist", "models/ensemble/ensemble_species_list.txt",
             "--target_model_filepath",  "models/target/OESF_1.0/OESF_1.0.tflite",
             "--use_ensemble",
