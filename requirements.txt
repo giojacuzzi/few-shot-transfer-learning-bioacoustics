@@ -1,9 +1,9 @@
 # Data processing and visualization
-pandas==2.2.2
-Levenshtein==0.25.1
+tensorflow==2.15.0 # Windows users may need to enable "long paths"
 librosa==0.10.1
 resampy==0.4.3
-tensorflow==2.15.0 # Windows users may need to enable "long paths"
+pandas==2.2.2
+Levenshtein==0.25.1
 scikit-maad==1.4.1
 
 # GUI application
