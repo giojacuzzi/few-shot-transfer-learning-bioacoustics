@@ -30,7 +30,7 @@ def get_relative_paths(root, extension):
 # Wrapper for audio.process_audio process_file_or_dir
 def process(
         in_path, # path to a file or directory
-        out_dir_path        = '',
+        out_dir_path,
         rtype = 'csv',
         target_model_filepath = None,
         slist = None,
@@ -40,6 +40,14 @@ def process(
         threads        = 8,
         cleanup        = True
 ):
+    if in_path == '' or out_dir_path == '':
+        log.print_error('Input and output paths must be specified to calculate predictions')
+        return
+
+    if use_ensemble and (target_model_filepath == None):
+        log.print_error('Target model path required for ensemble')
+        return
+    
     out_dir_path = os.path.join(out_dir_path, 'predictions')
 
     if target_model_filepath == 'None':
@@ -51,10 +59,6 @@ def process(
 
     models = []
     model_tags = []
-
-    if use_ensemble and (target_model_filepath == None):
-        log.print_error("Target model required for ensemble")
-        return
 
     if (target_model_filepath == None) or use_ensemble:
         models.append(None)
@@ -91,7 +95,7 @@ def process(
             batchsize=1,
             locale='en',
             sf_thresh=0.03,
-            classifier=model, # None
+            classifier=model, # None for source
             fmin=cfg.SIG_FMIN, fmax=cfg.SIG_FMAX,
             skip_existing_results=True
         )
@@ -111,8 +115,6 @@ def process(
             extension = 'csv'
 
         for rel_path in get_relative_paths(source_dir, extension):
-            # print(f'rel_path {rel_path}')
-
             source_file = os.path.join(source_dir, rel_path)
             target_file = os.path.join(target_dir, rel_path)
             result_file = os.path.join(out_dir_path, rel_path)
@@ -136,7 +138,6 @@ def process(
                 shared_cols = list(predictions_source.columns)
                 shared_cols.remove('Confidence')
                 predictions_ensemble = pd.merge(predictions_source, predictions_target, on=shared_cols, how='outer', suffixes=('_source', '_target'))
-                # print(f'predictions_ensemble {predictions_ensemble}')
 
                 # Calculate ensemble confidence
                 predictions_ensemble = pd.merge(predictions_ensemble, weights, on='Common Name', how='left')
@@ -181,6 +182,10 @@ def segment(
     seg_length,
     threads
 ):
+    if (in_audio_path == '') or (in_predictions_path == '') or (out_dir_path == ''):
+        log.print_error('Input audio, predictions, and output paths must be specified to extract audio segments')
+        return
+
     print(f'Extracting audio segments from {in_audio_path} with predictions {in_predictions_path}')
 
     time_start = time.time()
@@ -203,28 +208,11 @@ def segment(
 
 
 def main(args):
-    # Required arguments
-    print(f"in_path: {args.in_path}")
-    print(f"out_path_predictions: {args.out_path_predictions}")
-    # print(f"out_filetype: {args.out_filetype}")
-
-    # Optional arguments
-    if args.target_model_filepath:
-        print(f"target_model_filepath: {args.target_model_filepath}")
-    if args.use_ensemble:
-        print("use_ensemble: True")
-    else:
-        print("use_ensemble: False")
-    if args.ensemble_weights:
-        print(f"ensemble_weights: {args.ensemble_weights}")
-    if args.min_confidence:
-        print(f"min_confidence: {args.min_confidence}")
-    if args.threads:
-        print(f"threads: {args.threads}")
     
     process(
         in_path                         = args.in_path,
         out_dir_path                    = args.out_path_predictions,
+        rtype                           = args.out_filetype,
         target_model_filepath           = args.target_model_filepath,
         slist                           = args.slist, 
         use_ensemble                    = args.use_ensemble,
@@ -245,24 +233,20 @@ def main(args):
     )
 
 if __name__ == "__main__":
-    # freeze_support()
-    print('process_audio.py MAIN')
-
     parser = argparse.ArgumentParser(description="A script with required and optional arguments")
 
     # Required arguments
     parser.add_argument("in_path",      type=str, help="Absolute path to a single audio file or a directory containing audio files (will search the directory tree recursively)")
     parser.add_argument("out_path_predictions", type=str, help="Absolute path to the output directory")
-    # parser.add_argument("out_filetype", type=str, help="Supported file types: '.csv' (human-readable, larger storage size) or '.parquet' (compressed, smaller storage size)")
 
     # Optional arguments
+    parser.add_argument("--out_filetype", type=str, help="Supported file types: 'csv' or 'table' (Raven selection table)")
     parser.add_argument("--target_model_filepath", type=str, help="Relative path to target model .tflite file")
     parser.add_argument("--slist", type=str, help="Relative path to ensemble labels .txt file")
     parser.add_argument("--use_ensemble", action="store_true", help="Flag to use source and target models together as an ensemble")
     parser.add_argument("--ensemble_weights", type=str, help="Model-specific class weights for ensemble")
     parser.add_argument("--min_confidence", type=float, help="Minimum confidence score to retain a detection (float)")
     parser.add_argument("--threads", type=int, help="Number of cores used by the processing pool (<= number of physical cores available on your computer) (int)")
-    # parser.add_argument("--cleanup", action="store_true", help="Flag to delete temporary processing files")
 
     # TODO: these hard-coded defaults are here for debugging; remove for distribution
     if len(sys.argv) > 1:
@@ -273,6 +257,7 @@ if __name__ == "__main__":
         args = parser.parse_args([
             "/Users/giojacuzzi/Desktop/input",
             "/Users/giojacuzzi/Desktop/output",
+            "--out_filetype", "table",
             "--slist", "models/ensemble/ensemble_species_list.txt",
             "--target_model_filepath",  "models/target/OESF_1.0/OESF_1.0.tflite",
             "--use_ensemble",
