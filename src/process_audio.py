@@ -177,7 +177,7 @@ def process(
     time_end = time.time()
     time_elapsed = (time_end - time_start)/60.0
 
-    log.print_success(f'Finished processing predictions ({time_elapsed:.2f} min)')
+    log.print_success(f'Finished processing predictions ({time_elapsed:.1f} min)')
 
     return
 
@@ -215,7 +215,7 @@ def segment(
     time_end = time.time()
     time_elapsed = (time_end - time_start)/60.0
 
-    log.print_success(f'Finished extracting audio segments ({time_elapsed:.2f} min)')
+    log.print_success(f'Finished extracting audio segments ({time_elapsed:.1f} min)')
 
 
 def main(args):
