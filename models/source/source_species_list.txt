@@ -1,10 +1,3 @@
-Abiotic_Abiotic Aircraft
-Abiotic_Abiotic Logging
-Abiotic_Abiotic Rain
-Abiotic_Abiotic Vehicle
-Abiotic_Abiotic Wind
-Biotic_Biotic Anuran
-Biotic_Biotic Insect
 Corvus brachyrhynchos_American Crow
 Spinus tristis_American Goldfinch
 Falco sparverius_American Kestrel
