@@ -14,7 +14,7 @@
 
 # CHANGE ME ##############################################################################
 evaluation_dataset = 'test' # 'validation' or 'test'
-target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}""; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
+target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
 evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation
 overwrite = False
 plot_precision_recall = False
@@ -311,12 +311,9 @@ if __name__ == '__main__':
     performance_metrics = performance_metrics.drop_duplicates()
     performance_metrics.sort_values(by=['PR_AUC', 'label', 'model'], inplace=True)
     performance_metrics.loc[performance_metrics['N_pos'] == 0, ['PR_AUC', 'AP', 'ROC_AUC', 'f1_max']] = np.nan
-    # TODO
-    # fp = f'data/cache/{target_model_stub}/test_evaluate_performance_performance_metrics.csv'
-    # if not os.path.exists(f'data/cache/{target_model_stub}'):
-    #     os.makedirs(f'data/cache/{target_model_stub}')
+    fp = f'results/{target_model_stub}/sample_perf/metrics_complete.csv'
     performance_metrics.to_csv(fp, index=False)
-    print_success(f'Saved performance metrics to {fp}')
+    print_success(f'Saved complete performance metrics to {fp}')
 
     file_source_perf = f'results/{target_model_stub}/sample_perf/metrics_source.csv'
     file_target_perf = f'results/{target_model_stub}/sample_perf/metrics_target.csv'
