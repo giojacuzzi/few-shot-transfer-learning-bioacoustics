@@ -7,8 +7,8 @@
 # - Source and target labels lists (e.g. "models/source/source_species_list.txt" and "models/target/OESF_1.0/OESF_1.0_Labels.txt")
 #
 # Output:
-# - Intermediate prediction scores and threshold performance values for source and target models at "data/interm/{target_model_stub}/{model}"
-# - Final performance metrics results at "results/{target_model_stub}/sample_perf"
+# - Intermediate prediction scores for source and target models at "data/interm/{target_model_stub}/{model}"
+# - Threshold performance values and final performance metrics results at "results/{target_model_stub}/sample_perf"
 #
 # Afterwards, plot results with figs/fig_sample_perf.R
 
@@ -16,7 +16,7 @@
 evaluation_dataset = 'test' # 'validation' or 'test'
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}""; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
 evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation
-overwrite = True
+overwrite = False
 plot_precision_recall = False
 ##########################################################################################
 
@@ -150,11 +150,13 @@ if __name__ == '__main__':
 
         if model == out_dir_source:
             model_labels_to_evaluate = [label.split('_')[1].lower() for label in preexisting_labels_to_evaluate]
+            model_tag = 'source'
         elif model == out_dir_target:
             model_labels_to_evaluate = [label.split('_')[1].lower() for label in target_labels_to_evaluate]
+            model_tag = 'target'
 
         print(f'Evaluating {len(model_labels_to_evaluate)} labels: {model_labels_to_evaluate}')
-        input()
+        # input()
 
         # Load analyzer detection scores for each evaluation file example
         print(f'Loading {model} detection scores for evaluation examples...')
@@ -281,13 +283,10 @@ if __name__ == '__main__':
             # Get all the predictions and their associated confidence scores for this label
             detection_labels = predictions[predictions['label_predicted'] == label_under_evaluation]
 
-            species_performance_metrics = evaluate_species_performance(detection_labels=detection_labels, species=label_under_evaluation, plot=plot_precision_recall, title_label=model, save_to_dir=f'{model}/threshold_perf')
+            species_performance_metrics = evaluate_species_performance(detection_labels=detection_labels, species=label_under_evaluation, plot=plot_precision_recall, title_label=model, save_to_dir=f'results/{target_model_stub}/sample_perf/threshold_perf_{model_tag}')
             model_performance_metrics = pd.concat([model_performance_metrics, species_performance_metrics], ignore_index=True)
 
-        if model == out_dir_source:
-            model_performance_metrics['model'] = 'source'
-        elif model == out_dir_target:
-            model_performance_metrics['model'] = 'target'
+        model_performance_metrics['model'] = model_tag
         performance_metrics = pd.concat([performance_metrics, model_performance_metrics], ignore_index=True)
 
         # Display results and save to file
