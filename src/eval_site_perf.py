@@ -4,7 +4,7 @@
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
 # - Source and target labels lists (e.g. "models/source/source_species_list.txt" and "models/target/OESF_1.0/OESF_1.0_Labels.txt")
 # - Complete sample level performance metrics ("results/{target_model_stub}/sample_perf/metrics_complete.csv")
-# - Path to directory containing prediction scores from both the source and target models for the entire monitoring period under evaluation, saved to "data/interim/{target_model_stub}/site_perf/raw_predictions/{model_tag}". (Note these data are NOT produced by this script; you must generate them via process_audio or the GUI)
+# - Path to directory containing prediction scores from both the source and target models for the entire monitoring period under evaluation, saved to "data/interim/{target_model_stub}/test/site_perf/raw_predictions/{model_tag}". (Note these data are NOT produced by this script; you must generate them via process_audio or the GUI)
 # - Table containing site true presence and absence for all species ("data/test/site_presence_absence.csv")
 # - Site key associating site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
 #
@@ -27,7 +27,7 @@ overwrite_metadata_cache = False
 
 min_site_detections = 0
 
-out_dir = f'results/{target_model_stub}/site_perf'
+out_dir = f'results/{target_model_stub}/test/site_perf'
 out_dir_source = out_dir + '/source'
 out_dir_target     = out_dir + '/target'
 models = [out_dir_source, out_dir_target]
@@ -51,7 +51,7 @@ print(preexisting_labels_to_evaluate)
 print(f"{len(target_labels_to_evaluate)} target labels to evaluate:")
 print(target_labels_to_evaluate)
 
-perf_metrics_and_thresholds = pd.read_csv(f'results/{target_model_stub}/sample_perf/metrics_complete.csv')
+perf_metrics_and_thresholds = pd.read_csv(f'results/{target_model_stub}/test/sample_perf/metrics_complete.csv')
 
 # Data culling – get minimum confidence score to retain a prediction for analysis (helps speed up analysis process considerably)
 # labels_to_evaluate = [label.split('_')[1].lower() for label in preexisting_labels_to_evaluate]
@@ -67,15 +67,17 @@ min_conf_dict = dict(zip(class_thresholds['label'], class_thresholds['min']))
 def remove_extension(f):
     return os.path.splitext(f)[0]
 
+dir_interim_site_perf = f'data/interim/{target_model_stub}/test/site_perf'
+
 # Load and cache analyzer prediction scores for ALL raw audio files
 if overwrite_prediction_cache:
     for model in models:
         print(f'Loading {model} prediction scores for test examples...')
 
         if model == out_dir_source:
-            score_dir_root = f'data/interim/{target_model_stub}/site_perf/raw_predictions/source'
+            score_dir_root = f'{dir_interim_site_perf}/raw_predictions/source'
         elif model == out_dir_target:
-            score_dir_root = f'data/interim/{target_model_stub}/site_perf/raw_predictions/target'
+            score_dir_root = f'{dir_interim_site_perf}/raw_predictions/target'
 
         score_files = []
         score_files.extend(find_files(score_dir_root, '.csv')) 
@@ -105,15 +107,15 @@ if overwrite_prediction_cache:
         predictions['label_predicted'] = predictions['label_predicted'].str.lower()
 
         if model == out_dir_target:
-            predictions.to_parquet(f'data/interim/{target_model_stub}/site_perf/cached_predictions/source/predictions_source.parquet')
+            predictions.to_parquet(f'{dir_interim_site_perf}/cached_predictions/source/predictions_source.parquet')
         elif model == out_dir_target:
-            predictions.to_parquet(f'data/interim/{target_model_stub}/site_perf/cached_predictions/target/predictions_target.parquet')
+            predictions.to_parquet(f'{dir_interim_site_perf}/cached_predictions/target/predictions_target.parquet')
 
 print('Loading target predictions from cache...')
-predictions_target = pd.read_parquet(f'data/interim/{target_model_stub}/site_perf/cached_predictions/target/predictions_target.parquet')
+predictions_target = pd.read_parquet(f'{dir_interim_site_perf}/cached_predictions/target/predictions_target.parquet')
 print(f'Loaded {len(predictions_target)} predictions')
 print('Loading source predictions from cache...')
-predictions_source = pd.read_parquet(f'data/interim/{target_model_stub}/site_perf/cached_predictions/source/predictions_source.parquet')
+predictions_source = pd.read_parquet(f'{dir_interim_site_perf}/cached_predictions/source/predictions_source.parquet')
 print(f'Loaded {len(predictions_source)} predictions')
 
 print(f'PERFORMANCE EVALUATION - site level ================================================================================================')
@@ -208,7 +210,7 @@ for model in models:
                 site = get_matching_site(row)
                 predictions_for_label.at[i, 'site'] = site
 
-            predictions_for_label.to_parquet(f'data/interim/{target_model_stub}/site_perf/cached_predictions/{model_tag}/predictions_for_label_{label}_{model_tag}.parquet')
+            predictions_for_label.to_parquet(f'{dir_interim_site_perf}/cached_predictions/{model_tag}/predictions_for_label_{label}_{model_tag}.parquet')
     
     metrics = perf_metrics_and_thresholds[perf_metrics_and_thresholds['model'] == model_tag]
     metrics['label'] = metrics['label'].str.lower()
@@ -220,7 +222,7 @@ for model in models:
 
         # Load predictions_for_label for this label from cache
         print(f'Retrieving {model_tag} predictions with metadata...')
-        predictions_for_label = pd.read_parquet(f'data/interim/{target_model_stub}/site_perf/cached_predictions/{model_tag}/predictions_for_label_{label}_{model_tag}.parquet')
+        predictions_for_label = pd.read_parquet(f'{dir_interim_site_perf}/cached_predictions/{model_tag}/predictions_for_label_{label}_{model_tag}.parquet')
 
         label_metrics = metrics[metrics['label'] == label]
         Tp = label_metrics['Tp'].iloc[0]

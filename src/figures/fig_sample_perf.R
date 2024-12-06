@@ -1,7 +1,7 @@
 # Plot performance comparisons between pre-trained source and custom target models
 #
 # Input:
-# - Threshold performance results at "results/{target_model_stub}/sample_perf/threshold_perf_{model_tag}"
+# - Threshold performance results at "results/{target_model_stub}/test/sample_perf/threshold_perf_{model_tag}"
 # - Figure labels table ("data/figures/fig_labels.csv")
 # - Site presence/absence table ("data/test/site_presence_absence.csv")
 #
@@ -22,8 +22,8 @@ library(patchwork)
 library(stringr)
 source('src/figures/fig_global.R')
 
-path_source = paste('results/', target_model_stub, '/sample_perf/threshold_perf_source', sep='')
-path_target = paste('results/', target_model_stub, '/sample_perf/threshold_perf_target', sep='')
+path_source = paste('results/', target_model_stub, '/test/sample_perf/threshold_perf_source', sep='')
+path_target = paste('results/', target_model_stub, '/test/sample_perf/threshold_perf_target', sep='')
 
 fig_labels = read.csv('data/figures/fig_labels.csv')
 

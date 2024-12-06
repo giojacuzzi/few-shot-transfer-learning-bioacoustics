@@ -14,8 +14,8 @@
 #
 # User-defined parameters
 model_to_evaluate = 'source'
-confusion_mtx = read.csv('results/OESF_1.0/sample_perf/confusion_matrix/confusion_matrix_T0.5.csv', row.names=1, check.names = FALSE)
-perf_metrics = read.csv('results/OESF_1.0/sample_perf/metrics_complete.csv')
+confusion_mtx = read.csv('results/OESF_1.0/test/sample_perf/confusion_matrix/confusion_matrix_T0.5.csv', row.names=1, check.names = FALSE)
+perf_metrics = read.csv('results/OESF_1.0/test/sample_perf/metrics_complete.csv')
 ###########################
 
 library(ggraph)

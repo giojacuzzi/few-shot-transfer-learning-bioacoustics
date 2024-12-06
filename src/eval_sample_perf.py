@@ -7,8 +7,8 @@
 # - Source and target labels lists (e.g. "models/source/source_species_list.txt" and "models/target/OESF_1.0/OESF_1.0_Labels.txt")
 #
 # Output:
-# - Intermediate prediction scores for source and target models at "data/interm/{target_model_stub}/{model}"
-# - Threshold performance values and final performance metrics results at "results/{target_model_stub}/sample_perf"
+# - Intermediate prediction scores for source and target models at "data/interm/{target_model_stub}/{evaluation_dataset}/{model}"
+# - Threshold performance values and final performance metrics results at "results/{target_model_stub}/{evaluation_dataset}/sample_perf"
 #
 # Afterwards, plot results with figs/fig_sample_perf.R
 #
@@ -29,14 +29,15 @@ import pandas as pd
 import shutil
 import sys
 
-if not os.path.exists(f'results/{target_model_stub}/sample_perf'):
-    os.makedirs(f'results/{target_model_stub}/sample_perf')
+results_out_dir = f'results/{target_model_stub}/{evaluation_dataset}/sample_perf'
+if not os.path.exists(results_out_dir):
+    os.makedirs(results_out_dir)
 
 if evaluation_dataset != 'validation' and evaluation_dataset != 'test':
     print_error('Invalid evaluation dataset')
     sys.exit()
 if target_model_stub == None and evaluation_dataset == 'validation':
-    print_error('Evaluating with a validation dataset requires a custom model specified')
+    print_error('Evaluating with a validation dataset requires specifying a custom model')
     sys.exit()
 
 # Load class labels
@@ -58,13 +59,13 @@ sort_by      = 'confidence' # Column to sort dataframe by
 ascending    = False        # Column sort direction
 save_to_file = True         # Save output to a file
 if evaluation_dataset == 'validation' and target_model_stub != None: # Validation dataset with target model
-    out_dir = f'data/interim/validation/custom/{target_model_stub}'
+    out_dir = f'data/interim/{target_model_stub}/validation/sample_perf'
     target_model_dir_path = f'models/target/{target_model_stub}'
 elif evaluation_dataset == 'test': # Test dataset
     if target_model_stub == None: # Source model
-        out_dir = 'data/interim/source'
+        out_dir = 'data/interim/test/source'
     else: # Target model
-        out_dir = f'data/interim/{target_model_stub}/sample_perf' #f'data/test/{target_model_stub}'
+        out_dir = f'data/interim/{target_model_stub}/test/sample_perf' #f'data/test/{target_model_stub}'
     target_model_dir_path = f'models/target/{target_model_stub}'
 
 # Analyzer config
@@ -90,7 +91,7 @@ if __name__ == '__main__':
 
     # TODO
     if evaluation_dataset == 'validation':
-        development_data = pd.read_csv(f'{target_model_dir_path}/combined_files.csv')
+        development_data = pd.read_csv(f'{target_model_dir_path}/combined_files.csv') # TODO: List of validation files from the training process?
         evaluation_data = development_data[development_data['dataset'] == 'validation']
         evaluation_data.loc[:, 'file'] = evaluation_data['file'].apply(remove_extension)
 
@@ -283,7 +284,7 @@ if __name__ == '__main__':
             # Get all the predictions and their associated confidence scores for this label
             detection_labels = predictions[predictions['label_predicted'] == label_under_evaluation]
 
-            species_performance_metrics = evaluate_species_performance(detection_labels=detection_labels, species=label_under_evaluation, plot=plot_precision_recall, title_label=model, save_to_dir=f'results/{target_model_stub}/sample_perf/threshold_perf_{model_tag}')
+            species_performance_metrics = evaluate_species_performance(detection_labels=detection_labels, species=label_under_evaluation, plot=plot_precision_recall, title_label=model, save_to_dir=f'{results_out_dir}/threshold_perf_{model_tag}')
             model_performance_metrics = pd.concat([model_performance_metrics, species_performance_metrics], ignore_index=True)
 
         model_performance_metrics['model'] = model_tag
@@ -298,9 +299,9 @@ if __name__ == '__main__':
         print(model_performance_metrics.to_string())
 
         if model == out_dir_source:
-            fp = f"results/{target_model_stub}/sample_perf/metrics_source.csv"
+            fp = f'{results_out_dir}/metrics_source.csv'
         elif model == out_dir_target:
-            fp = f"results/{target_model_stub}/sample_perf/metrics_target.csv"
+            fp = f'{results_out_dir}/metrics_target.csv'
         model_performance_metrics.to_csv(fp, index=False)
         print_success(f'Results saved to {fp}')
         print(model_performance_metrics)
@@ -312,13 +313,13 @@ if __name__ == '__main__':
     performance_metrics = performance_metrics.drop_duplicates()
     performance_metrics.sort_values(by=['PR_AUC', 'label', 'model'], inplace=True)
     performance_metrics.loc[performance_metrics['N_pos'] == 0, ['PR_AUC', 'AP', 'ROC_AUC', 'f1_max']] = np.nan
-    fp = f'results/{target_model_stub}/sample_perf/metrics_complete.csv'
+    fp = f'{results_out_dir}/metrics_complete.csv'
     performance_metrics.to_csv(fp, index=False)
     print(performance_metrics)
     print_success(f'Saved complete performance metrics to {fp}')
 
-    file_source_perf = f'results/{target_model_stub}/sample_perf/metrics_source.csv'
-    file_target_perf = f'results/{target_model_stub}/sample_perf/metrics_target.csv'
+    file_source_perf = f'{results_out_dir}/metrics_source.csv'
+    file_target_perf = f'{results_out_dir}/metrics_target.csv'
 
     perf_source = pd.read_csv(file_source_perf)
     perf_source['label'] = perf_source['label'].str.lower()
@@ -339,7 +340,7 @@ if __name__ == '__main__':
         np.where(perf_combined['PR_AUC_target'] == perf_combined['PR_AUC_max'], 'target', 'source')
     )
 
-    fp = f'results/{target_model_stub}/sample_perf/metrics_combined.csv'
+    fp = f'{results_out_dir}/metrics_combined.csv'
     perf_combined.to_csv(fp, index=False)
     print_success(f'Saved combined performance results to {fp}')
 
@@ -378,6 +379,6 @@ if __name__ == '__main__':
         delta_metrics['label'] = delta_metrics['label'].str.title()
 
         print(delta_metrics)
-        fp = f"results/{target_model_stub}/sample_perf/metrics_summary.csv"
+        fp = f'{results_out_dir}/metrics_summary.csv'
         delta_metrics.to_csv(fp, index=False)
         print_success(f'Summary results saved to {fp}')

@@ -24,12 +24,12 @@ print(site_key)
 
 # Site-level stratum with the most site errors using minimum error threshold, both models
 
-path_site_perf_source = f'results/{target_model_stub}/site_perf/source/site_perf_source.csv'
+path_site_perf_source = f'results/{target_model_stub}/test/site_perf/source/site_perf_source.csv'
 site_perf_source = pd.read_csv(path_site_perf_source)
 site_perf_source = site_perf_source[site_perf_source['threshold'] == '0.8']
 print(site_perf_source) 
 
-path_site_perf_target = f'results/{target_model_stub}/site_perf/target/site_perf_target.csv'
+path_site_perf_target = f'results/{target_model_stub}/test/site_perf/target/site_perf_target.csv'
 site_perf_target = pd.read_csv(path_site_perf_target)
 site_perf_target = site_perf_target[site_perf_target['threshold'] == '0.9']
 print(site_perf_target.to_string())
