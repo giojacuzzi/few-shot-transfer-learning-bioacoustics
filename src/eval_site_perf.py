@@ -85,23 +85,23 @@ if overwrite_prediction_cache:
             if i % 50 == 0:
                 print(f"{round(i/len(score_files) * 100, 2)}% ({i} of {len(score_files)} files)")
             try:
-                score = pd.read_csv(file, low_memory=False, usecols=['common_name', 'confidence', 'start_date']) # TODO
+                score = pd.read_csv(file, low_memory=False, usecols=['Common name', 'Confidence', 'Start (s)'])
             except Exception as e:
                 print_warning(f'{e}')
                 print_warning(f'Incompatible columns in file {file}. Skipping...')
                 continue
-            score['common_name'] = score['common_name'].str.lower()
+            score['Common name'] = score['Common name'].str.lower()
 
             # Cull unnecessary predictions below relevant confidence thresholds
             score = score[
-                score.apply(lambda row: row['confidence'] >= min_conf_dict.get(row['common_name'], float('-inf')), axis=1)
+                score.apply(lambda row: row['Confidence'] >= min_conf_dict.get(row['Common name'], float('-inf')), axis=1)
             ]
 
             score['file'] = os.path.basename(file)
             predictions = pd.concat([predictions, score], ignore_index=True)
             i += 1
         predictions['file'] = predictions['file'].apply(remove_extension)
-        predictions.rename(columns={'common_name': 'label_predicted'}, inplace=True)
+        predictions.rename(columns={'Common name': 'label_predicted'}, inplace=True)
         predictions['label_predicted'] = predictions['label_predicted'].str.lower()
 
         if model == out_dir_target:
