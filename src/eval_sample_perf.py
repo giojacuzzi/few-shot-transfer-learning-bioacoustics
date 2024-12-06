@@ -303,6 +303,7 @@ if __name__ == '__main__':
             fp = f"results/{target_model_stub}/sample_perf/metrics_target.csv"
         model_performance_metrics.to_csv(fp, index=False)
         print_success(f'Results saved to {fp}')
+        print(model_performance_metrics)
 
         if plot_precision_recall:
             plt.show()
@@ -313,6 +314,7 @@ if __name__ == '__main__':
     performance_metrics.loc[performance_metrics['N_pos'] == 0, ['PR_AUC', 'AP', 'ROC_AUC', 'f1_max']] = np.nan
     fp = f'results/{target_model_stub}/sample_perf/metrics_complete.csv'
     performance_metrics.to_csv(fp, index=False)
+    print(performance_metrics)
     print_success(f'Saved complete performance metrics to {fp}')
 
     file_source_perf = f'results/{target_model_stub}/sample_perf/metrics_source.csv'
@@ -341,10 +343,10 @@ if __name__ == '__main__':
     perf_combined.to_csv(fp, index=False)
     print_success(f'Saved combined performance results to {fp}')
 
-    # Calculate metric deltas between custom and pre-trained
+    # Calculate metric deltas between target and source
     if len(models) > 1:
         # TODO: Ensure these are comparing the same shared labels?
-        print('Deltas between custom and pre-trained:')
+        print('Deltas between target and source:')
         metrics_target = performance_metrics[performance_metrics['model'] == 'target'][[
             'label', 'AP', 'PR_AUC', 'ROC_AUC', 'f1_max'
         ]].rename(columns={

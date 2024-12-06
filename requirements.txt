@@ -4,7 +4,7 @@ librosa==0.10.1
 resampy==0.4.3
 pandas==2.2.2
 Levenshtein==0.25.1
-scikit-maad==1.4.1
+pyarrow==18.1.0
 
 # GUI application
 customtkinter==5.2.2
