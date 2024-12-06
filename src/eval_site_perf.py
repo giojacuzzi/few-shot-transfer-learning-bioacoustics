@@ -10,11 +10,11 @@
 #
 # Output:
 # - Site level performance metrics and species richness estimates across thresholds
-
-# CHANGE ME ###
-target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"
+#
+# User-defined parameters:
+target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
 threshold_to_evaluate = '0.9' # Threshold for complete site metrics
-###############
+#############################################
 
 import pandas as pd
 from misc.log import *

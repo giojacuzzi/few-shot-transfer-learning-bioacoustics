@@ -8,6 +8,11 @@
 # Output:
 # - Precision-recall threshold and AUC plots
 # - Confidence score distribution plots
+#
+# User-defined parameters
+target_model_stub = 'OESF_1.0'
+labels_to_plot = c("sooty grouse", "marbled murrelet", "golden-crowned kinglet", "belted kingfisher", "black-throated gray warbler", "wilson's warbler")
+###########################
 
 library(dplyr)
 library(tools)
@@ -17,13 +22,10 @@ library(patchwork)
 library(stringr)
 source('src/figures/fig_global.R')
 
-target_model_stub = 'OESF_1.0'
-path_source = paste('/Users/giojacuzzi/repos/few-shot-transfer-learning-bioacoustics/results/', target_model_stub, '/sample_perf/threshold_perf_source', sep='')
-path_target = paste('/Users/giojacuzzi/repos/few-shot-transfer-learning-bioacoustics/results/', target_model_stub, '/sample_perf/threshold_perf_target', sep='')
+path_source = paste('results/', target_model_stub, '/sample_perf/threshold_perf_source', sep='')
+path_target = paste('results/', target_model_stub, '/sample_perf/threshold_perf_target', sep='')
 
-labels_to_plot = c("sooty grouse", "marbled murrelet", "golden-crowned kinglet", "belted kingfisher", "black-throated gray warbler", "wilson's warbler")
-
-fig_labels = read.csv('/Users/giojacuzzi/repos/few-shot-transfer-learning-bioacoustics/data/figures/fig_labels.csv')
+fig_labels = read.csv('data/figures/fig_labels.csv')
 
 load_perf = function(path, model_tag) {
   files = list.files(path = path, pattern = "\\.csv$", full.names = TRUE)

@@ -9,13 +9,15 @@
 #
 # Output:
 # - Site level performance metrics across habitat strata for each model and set of species labels.
+#
+# User-defined parameters:
+target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
+#############################################
 
 import pandas as pd
 import numpy as np
 import ast
 from misc.log import *
-
-target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
 
 site_key = pd.read_csv('data/site_key.csv')
 print(site_key)
