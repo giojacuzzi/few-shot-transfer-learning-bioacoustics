@@ -14,8 +14,8 @@
 #
 # User-defined parameters:
 evaluation_dataset = 'test' # 'validation' or 'test'
-target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
-evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation
+target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_LR0.001_BS10_HU0_LSFalse_US0_N10_I0', or None to only evaluate pre-trained model
+evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio")
 overwrite = False
 plot_precision_recall = False
 #############################################
@@ -60,7 +60,9 @@ ascending    = False        # Column sort direction
 save_to_file = True         # Save output to a file
 if evaluation_dataset == 'validation' and target_model_stub != None: # Validation dataset with target model
     out_dir = f'data/interim/{target_model_stub}/validation/sample_perf'
-    target_model_dir_path = f'models/target/{target_model_stub}'
+    target_model_parent_stub = target_model_stub.split('_')  # parent dir
+    target_model_parent_stub = '_'.join(target_model_parent_stub[:-2])
+    target_model_dir_path = f'models/target/{target_model_parent_stub}/{target_model_stub}'
 elif evaluation_dataset == 'test': # Test dataset
     if target_model_stub == None: # Source model
         out_dir = 'data/interim/test/source'
@@ -89,14 +91,13 @@ if __name__ == '__main__':
     # 'path' - full path to the audio file
     # 'file' - the basename of the audio file
 
-    # TODO
     if evaluation_dataset == 'validation':
-        development_data = pd.read_csv(f'{target_model_dir_path}/combined_files.csv') # TODO: List of validation files from the training process?
+        development_data = pd.read_csv(f'data/interim/{target_model_parent_stub}/training/{target_model_stub}/combined_development_files.csv')
         evaluation_data = development_data[development_data['dataset'] == 'validation']
         evaluation_data.loc[:, 'file'] = evaluation_data['file'].apply(remove_extension)
 
     elif evaluation_dataset == 'test':
-        evaluation_data = pd.read_csv('data/test/test_data_annotations.csv') # see pretest_consolidate_test_annotations.py
+        evaluation_data = pd.read_csv('data/test/test_data_annotations.csv')
         evaluation_data = evaluation_data[evaluation_data['target'].isin(all_labels)]
         evaluation_data['labels'] = evaluation_data['labels'].fillna('')
 
@@ -157,10 +158,9 @@ if __name__ == '__main__':
             model_tag = 'target'
 
         print(f'Evaluating {len(model_labels_to_evaluate)} labels: {model_labels_to_evaluate}')
-        # input()
 
         # Load analyzer detection scores for each evaluation file example
-        print(f'Loading {model} detection scores for evaluation examples...')
+        print(f'Loading "{model_tag}" detection scores for evaluation examples from {model}...')
         score_files = []
         score_files.extend(files.find_files(model, '.csv', exclude_dirs=['threshold_perf'])) 
         predictions = pd.DataFrame()
@@ -193,7 +193,7 @@ if __name__ == '__main__':
             raw_predictions_target = predictions
         
         print('Loading corresponding annotations...')
-        if evaluation_dataset == 'validation': # TODO
+        if evaluation_dataset == 'validation':
             # Load annotation labels for the training files as dataframe with columns:
             # 'file' - the basename of the audio file
             # 'labels' - true labels, separated by ', ' token
@@ -221,12 +221,8 @@ if __name__ == '__main__':
 
             conf = row['confidence']
 
-            # DEBUG
-            # TODO
-            if row['file'] not in annotations_files_set: # TODO: AND / INSTEAD the original target for this prediction is not in class_labels...
-                # print_warning('Setting invalid file to unknown')
+            if row['file'] not in annotations_files_set: # Ignore invalid predictions as unknown
                 predictions.at[i, 'label_truth'] = 'unknown'
-                # input()
                 continue
 
             # Does the file truly contain the label?
@@ -265,7 +261,7 @@ if __name__ == '__main__':
                         if target != row['label_predicted']:
                             predictions.at[i, 'label_truth'] = 'unknown'
                             break
-            
+        
         # Interpret missing labels as absences
         if predictions['label_truth'].isna().sum() > 0:
             print(f"Intepreting {predictions['label_truth'].isna().sum()} predictions with missing labels as absences...")
@@ -295,7 +291,7 @@ if __name__ == '__main__':
         model_performance_metrics['label'] = model_performance_metrics['label'].str.title()
         model_performance_metrics.loc[model_performance_metrics['N_pos'] == 0, ['PR_AUC', 'AP', 'ROC_AUC', 'f1_max']] = np.nan
         model_performance_metrics = model_performance_metrics.sort_values(by=['PR_AUC'], ascending=False).reset_index(drop=True)
-        print(f'PERFORMANCE METRICS FOR {model}')
+        print(f'Performance metrics for "{model_tag}":')
         print(model_performance_metrics.to_string())
 
         if model == out_dir_source:
@@ -318,35 +314,35 @@ if __name__ == '__main__':
     print(performance_metrics)
     print_success(f'Saved complete performance metrics to {fp}')
 
-    file_source_perf = f'{results_out_dir}/metrics_source.csv'
-    file_target_perf = f'{results_out_dir}/metrics_target.csv'
-
-    perf_source = pd.read_csv(file_source_perf)
-    perf_source['label'] = perf_source['label'].str.lower()
-    print(file_source_perf)
-
-    perf_target = pd.read_csv(file_target_perf)
-    perf_target['label'] = perf_target['label'].str.lower()
-    print(file_target_perf)
-
-    perf_combined = pd.merge(
-        perf_source[['label', 'PR_AUC']].rename(columns={'PR_AUC': 'PR_AUC_source'}),
-        perf_target[['label', 'PR_AUC']].rename(columns={'PR_AUC': 'PR_AUC_target'}),
-        on='label', how='outer'
-    )
-    perf_combined['PR_AUC_max'] = perf_combined[['PR_AUC_source', 'PR_AUC_target']].max(axis=1)
-    perf_combined['PR_AUC_max_model'] = np.where(
-        perf_combined['PR_AUC_source'] == perf_combined['PR_AUC_max'], 'source',
-        np.where(perf_combined['PR_AUC_target'] == perf_combined['PR_AUC_max'], 'target', 'source')
-    )
-
-    fp = f'{results_out_dir}/metrics_combined.csv'
-    perf_combined.to_csv(fp, index=False)
-    print_success(f'Saved combined performance results to {fp}')
-
-    # Calculate metric deltas between target and source
     if len(models) > 1:
-        # TODO: Ensure these are comparing the same shared labels?
+        file_source_perf = f'{results_out_dir}/metrics_source.csv'
+        file_target_perf = f'{results_out_dir}/metrics_target.csv'
+
+        perf_source = pd.read_csv(file_source_perf)
+        perf_source['label'] = perf_source['label'].str.lower()
+        print(file_source_perf)
+
+        perf_target = pd.read_csv(file_target_perf)
+        perf_target['label'] = perf_target['label'].str.lower()
+        print(file_target_perf)
+
+        perf_combined = pd.merge(
+            perf_source[['label', 'PR_AUC']].rename(columns={'PR_AUC': 'PR_AUC_source'}),
+            perf_target[['label', 'PR_AUC']].rename(columns={'PR_AUC': 'PR_AUC_target'}),
+            on='label', how='outer'
+        )
+        perf_combined['PR_AUC_max'] = perf_combined[['PR_AUC_source', 'PR_AUC_target']].max(axis=1)
+        perf_combined['PR_AUC_max_model'] = np.where(
+            perf_combined['PR_AUC_source'] == perf_combined['PR_AUC_max'], 'source',
+            np.where(perf_combined['PR_AUC_target'] == perf_combined['PR_AUC_max'], 'target', 'source')
+        )
+
+        # Combine performance metrics
+        fp = f'{results_out_dir}/metrics_combined.csv'
+        perf_combined.to_csv(fp, index=False)
+        print_success(f'Saved combined performance results to {fp}')
+
+        # Calculate metric deltas between target and source
         print('Deltas between target and source:')
         metrics_target = performance_metrics[performance_metrics['model'] == 'target'][[
             'label', 'AP', 'PR_AUC', 'ROC_AUC', 'f1_max'
