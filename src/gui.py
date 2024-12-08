@@ -5,9 +5,6 @@ from CTkMenuBar import *
 import asyncio
 import threading
 import os
-import subprocess
-import tempfile
-import time
 import json
 import sys
 import numpy as np
@@ -15,9 +12,6 @@ from typing import Callable, Union
 import process_audio
 
 from multiprocessing import freeze_support
-import time
-
-# print('gui.py')
 
 class Spinbox(customtkinter.CTkFrame):
     def __init__(self, *args,
@@ -37,10 +31,9 @@ class Spinbox(customtkinter.CTkFrame):
         self.max = max
         self.type = type
 
-        self.configure(fg_color=("gray78", "gray28"))  # set frame color
-
-        self.grid_columnconfigure((0, 2), weight=0)  # buttons don't expand
-        self.grid_columnconfigure(1, weight=1)  # entry expands
+        self.configure(fg_color=("gray78", "gray28"))
+        self.grid_columnconfigure((0, 2), weight=0) 
+        self.grid_columnconfigure(1, weight=1)
 
         self.subtract_button = customtkinter.CTkButton(self, text="-", width=height-6, height=height-6,
                                                        command=self.subtract_button_callback)
@@ -53,7 +46,6 @@ class Spinbox(customtkinter.CTkFrame):
                                                   command=self.add_button_callback)
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)
 
-        # default value
         if self.type == 'int':
             self.entry.insert(0, "0")
         elif self.type == ' float':
@@ -108,7 +100,6 @@ class Spinbox(customtkinter.CTkFrame):
             self.entry.insert(0, str(int(value)))
         elif self.type == 'float':
             self.entry.insert(0, float_to_str(float(value), float(self.step_size)))
-            # print(self.step_size)
     
 def float_to_str(value: float, step_size: float):
     value = float(value)
@@ -140,7 +131,7 @@ class ConsoleRedirector:
         self.textbox.configure(state="disabled")
         
     def flush(self):
-        pass # handle flush calls from the print function
+        pass # Handle flush calls from the print function
 
 class App(TkinterDnD.Tk):
     def __init__(self):
@@ -170,14 +161,10 @@ class App(TkinterDnD.Tk):
 
         self.frame_io = customtkinter.CTkFrame(self.frame_top, fg_color='transparent')
         self.frame_config = customtkinter.CTkFrame(self.frame_top)
-        # self.frame_process = customtkinter.CTkFrame(self, fg_color='black')
 
         self.frame_io.pack(side='left', fill = 'both', expand = False, padx=5, pady=5)
         self.frame_config.pack(side='left', fill = 'both', expand = True, padx=5, pady=5)
-        # self.tabview_model.pack(side='top')
-        # self.frame_process.pack(side='left', fill = 'both', expand = True, padx=5, pady=10)
 
-        ## DEBUG
         self.console_frame = customtkinter.CTkFrame(self.frame_bottom)
         self.console_frame.pack(side='top', fill = 'both', expand = True, padx=5, pady=5)
         self.console_textbox = customtkinter.CTkTextbox(self.console_frame, fg_color="#111111")
@@ -197,11 +184,9 @@ class App(TkinterDnD.Tk):
         self.frame_output.pack(side='top', fill = 'both', expand = True, padx=0, pady=(5,5))
         self.frame_process.pack(side='top', fill = 'both', expand = True, padx=0, pady=(5,0))
 
-        # self.frame_models = customtkinter.CTkFrame(self.frame_config, fg_color='orange')
         self.tabview_model = customtkinter.CTkTabview(self.frame_config)
         self.frame_options = customtkinter.CTkFrame(self.frame_config)
         self.frame_model_config = customtkinter.CTkFrame(self.frame_config)
-        # self.tabview_model.pack(side='left', fill = 'both', expand = True, padx=10, pady=5)
         self.frame_model_config.pack(side='left', fill = 'both', expand = True, padx=(10,5), pady=5)
         self.frame_options.pack(side='left', fill = 'both', expand = False, padx=(5,10), pady=5)
 
@@ -214,8 +199,6 @@ class App(TkinterDnD.Tk):
         self.entry_in_path.pack(side='top', fill = 'x', padx=10, pady=5)
         self.frame_input_config = customtkinter.CTkFrame(self.frame_input, fg_color='transparent')
         self.frame_input_config.pack(side='top')
-        # self.option_in_filetype = customtkinter.CTkOptionMenu(self.frame_input_config, dynamic_resizing=True, values=['.wav', '.aif', '.flac', '.mp3'])
-        # self.option_in_filetype.pack(side='left', padx=10, pady=5)
         self.button_open_in_dir = customtkinter.CTkButton(self.frame_input_config, text='Open directory', fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.callback_button_open_in_path_dir)
         self.button_open_in_dir.pack(side='left', padx=10, pady=5)
         self.button_open_in_file = customtkinter.CTkButton(self.frame_input_config, text='Open file', fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.callback_button_open_in_path_file)
@@ -248,11 +231,6 @@ class App(TkinterDnD.Tk):
         # Models
         self.label_model_config = customtkinter.CTkLabel(self.frame_model_config, text="Model configuration")
         self.label_model_config.pack(side='top')
-        # self.tabview_model.add('Source model')
-        # self.tabview_model.add('Target model')
-        # self.tabview_model.add('Ensemble')
-        # self.label_model = customtkinter.CTkLabel(self.tabview_model.tab('Source model'), text="Class labels")
-        # self.label_model.pack(side='top')
         self.entry_class_labels_filepath = customtkinter.CTkEntry(self.frame_model_config, placeholder_text="Path to class labels .txt file")
         self.entry_class_labels_filepath.pack(side='top', fill = 'x', padx=10, pady=5)
         self.entry_class_labels_filepath.drop_target_register(DND_FILES)
@@ -261,26 +239,10 @@ class App(TkinterDnD.Tk):
         self.seg_button_model_selection.pack(side='top', fill = 'x', padx=10, pady=5)
         self.seg_button_model_selection.configure(values=["Source", "Target", "Ensemble"])
         self.seg_button_model_selection.set("Source")
-        # self.switch_use_target_model = customtkinter.CTkSwitch(self.tabview_model.tab('Target model'), variable=self.use_target_model, onvalue=1, offvalue=0, command=self.callback_switch_use_target_model, text='Use target model')
-        # self.switch_use_target_model.select()
-        # self.switch_use_target_model.pack(side='top', padx=10, pady=5)
-        # self.label_model = customtkinter.CTkLabel(self.tabview_model.tab('Target model'), text="Model file")
-        # self.label_model.pack(side='top')
         self.entry_target_model_filepath = customtkinter.CTkEntry(self.frame_model_config, placeholder_text="Path to target model .tflite file")
         self.entry_target_model_filepath.pack(side='top', fill = 'x', padx=10, pady=5)
         self.entry_target_model_filepath.drop_target_register(DND_FILES)
         self.entry_target_model_filepath.dnd_bind('<<Drop>>', self.callback_entry_target_model_filepath_dnd)
-        # self.label_model = customtkinter.CTkLabel(self.tabview_model.tab('Target model'), text="Class labels")
-        # self.label_model.pack(side='top')
-        # self.entry_target_labels_filepath = customtkinter.CTkEntry(self.tabview_model.tab('Target model'), placeholder_text="Path to target model labels .txt file")
-        # self.entry_target_labels_filepath.pack(side='top', fill = 'x', padx=10, pady=5)
-        # self.entry_target_labels_filepath.drop_target_register(DND_FILES)
-        # self.entry_target_labels_filepath.dnd_bind('<<Drop>>', self.callback_entry_target_labels_filepath_dnd)
-        # self.switch_use_ensemble = customtkinter.CTkSwitch(self.tabview_model.tab('Ensemble'), variable=self.use_ensemble, onvalue=1, offvalue=0, command=self.callback_switch_use_ensemble, text='Use ensemble')
-        # self.switch_use_ensemble.select()
-        # self.switch_use_ensemble.pack(side='top', padx=10, pady=5)
-        # self.label_model = customtkinter.CTkLabel(self.tabview_model.tab('Ensemble'), text="Class model selections")
-        # self.label_model.pack(side='top')
         self.entry_ensemble_weights = customtkinter.CTkEntry(self.frame_model_config, placeholder_text="Path to ensemble model weights .txt file")
         self.entry_ensemble_weights.pack(side='top', fill = 'x', padx=10, pady=5)
         self.entry_ensemble_weights.drop_target_register(DND_FILES)
@@ -296,13 +258,6 @@ class App(TkinterDnD.Tk):
         self.spinbox_threads = Spinbox(self.frame_threads, type='int', min=1, max=128, width=150, step_size=1)
         self.spinbox_threads.pack(side='right', padx=10, pady=5)
         self.spinbox_threads.set(8)
-        # self.frame_n_separation = customtkinter.CTkFrame(self.frame_options, fg_color='transparent')
-        # self.frame_n_separation.pack(side='top', fill='x')
-        # self.label_options = customtkinter.CTkLabel(self.frame_n_separation, text="Separation")
-        # self.label_options.pack(side='left', padx=10)
-        # self.spinbox_n_separation = Spinbox(self.frame_n_separation, type='int', min=1, max=8, width=150, step_size=1)
-        # self.spinbox_n_separation.pack(side='right', padx=10, pady=5)
-        # self.spinbox_n_separation.set(1)
         self.frame_min_confidence = customtkinter.CTkFrame(self.frame_options, fg_color='transparent')
         self.frame_min_confidence.pack(side='top', fill='x')
         self.label_options = customtkinter.CTkLabel(self.frame_min_confidence, text="Min confidence")
@@ -317,12 +272,6 @@ class App(TkinterDnD.Tk):
         self.spinbox_seglength = Spinbox(self.frame_seglength, type='int', min=3, max=60, width=150, step_size=1)
         self.spinbox_seglength.pack(side='right', padx=10, pady=5)
         self.spinbox_seglength.set(3)
-        # self.checkbox_retain_logit_score = customtkinter.CTkCheckBox(self.frame_options, variable=self.retain_logit_score, onvalue=1, offvalue=0, command=self.callback_checkbox_retain_logit_score, text='Retain logit score')
-        # self.checkbox_retain_logit_score.deselect()
-        # self.checkbox_retain_logit_score.pack(side='top', padx=10, pady=5)
-
-        # Prime necessary callbacks
-        # self.callback_switch_use_target_model()
     
     # Menu callbacks
     def open_session_file(self):
@@ -332,7 +281,6 @@ class App(TkinterDnD.Tk):
                 session = json.load(f)
                 self.entry_in_path.delete(0,customtkinter.END)
                 self.entry_in_path.insert('0', session['in_path'])
-                # self.option_in_filetype.set(session['in_filetype'])
                 self.entry_out_dir_path.delete(0,customtkinter.END)
                 self.entry_out_dir_path.insert('0', session['out_dir_path'])
                 self.option_out_filetype.set(session['out_filetype'])
@@ -346,29 +294,14 @@ class App(TkinterDnD.Tk):
                     self.switch_calc_predictions.deselect()
                 self.entry_class_labels_filepath.delete(0,customtkinter.END)
                 self.entry_class_labels_filepath.insert('0', session['class_labels_filepath'])
-                # if session['use_target_model']:
-                #     self.switch_use_target_model.select()
-                # else:
-                #     self.switch_use_target_model.deselect()
                 self.entry_target_model_filepath.delete(0,customtkinter.END)
                 self.entry_target_model_filepath.insert('0', session['target_model_filepath'])
-                # self.entry_target_labels_filepath.delete(0,customtkinter.END)
-                # self.entry_target_labels_filepath.insert('0', session['target_labels_filepath'])
-                # if session['use_ensemble']:
-                #     self.switch_use_ensemble.select()
-                # else:
-                #     self.switch_use_ensemble.deselect()
                 self.entry_ensemble_weights.delete(0,customtkinter.END)
                 self.entry_ensemble_weights.insert('0', session['ensemble_weights'])
                 self.spinbox_threads.set(session['threads'])
-                # self.spinbox_n_separation.set(session['n_separation'])
                 self.spinbox_min_confidence.set(session['min_confidence'])
                 self.spinbox_seglength.set(session['seg_length'])
                 self.seg_button_model_selection.set(session['model_selection'])
-                # if session['retain_logit_score']:
-                #     self.checkbox_retain_logit_score.select()
-                # else:
-                #     self.checkbox_retain_logit_score.deselect()
             print(f'Opened session file {filepath}')
     
     def save_session_file(self):
@@ -409,71 +342,57 @@ class App(TkinterDnD.Tk):
 
     # Input callbacks
     def callback_entry_in_path_dnd(self, event):
-        # print(event.data)
         self.entry_in_path.delete(0,customtkinter.END)
         self.entry_in_path.insert('0', event.data)
 
     def callback_button_open_in_path_file(self):
         path = customtkinter.filedialog.askopenfilename()
-        # print(path)
         self.entry_in_path.delete(0,customtkinter.END)
         self.entry_in_path.insert('0', path)
 
     def callback_button_open_in_path_dir(self):
         path = customtkinter.filedialog.askdirectory()
-        # print(path)
         self.entry_in_path.delete(0,customtkinter.END)
         self.entry_in_path.insert('0', path)
 
     # Output callbacks
     def callback_entry_out_dir_path_dnd(self, event):
-        # print(event.data)
         self.entry_out_dir_path.delete(0,customtkinter.END)
         self.entry_out_dir_path.insert('0', event.data)
 
     def callback_button_open_out_path_dir(self):
         path = customtkinter.filedialog.askdirectory()
-        # print(path)
         self.entry_out_dir_path.delete(0,customtkinter.END)
         self.entry_out_dir_path.insert('0', path)
     
     def callback_switch_extract_segments(self):
-        # print("callback_checkbox_retain_dir_tree:", self.retain_dir_tree.get())
         return
 
     # Model config callbacks
     def callback_seg_button_model_selection(self, value):
-        # value = self.seg_button_model_selection.get()
-        # print("callback_seg_button_model_selection:", value)
         return
 
     def callback_switch_calc_predictions(self):
         value = self.use_target_model.get()
-        # print("callback_checkbox_use_target_model:", value)
     
     def callback_entry_class_labels_filepath_dnd(self, event):
-        # print(event.data)
         self.entry_class_labels_filepath.delete(0,customtkinter.END)
         self.entry_class_labels_filepath.insert('0', event.data)
     
     def callback_entry_target_model_filepath_dnd(self, event):
-        # print(event.data)
         self.entry_target_model_filepath.delete(0,customtkinter.END)
         self.entry_target_model_filepath.insert('0', event.data)
     
     def callback_entry_target_labels_filepath_dnd(self, event):
-        # print(event.data)
         self.entry_target_labels_filepath.delete(0,customtkinter.END)
         self.entry_target_labels_filepath.insert('0', event.data)
 
     def callback_entry_ensemble_weights_dnd(self, event):
-        # print(event.data)
         self.entry_ensemble_weights.delete(0,customtkinter.END)
         self.entry_ensemble_weights.insert('0', event.data)
 
     def callback_switch_use_ensemble(self):
         value = self.use_ensemble.get()
-        # print("callback_checkbox_use_ensemble:", value)
     
     # Options callbacks
     def callback_checkbox_retain_logit_score(self):
@@ -547,7 +466,7 @@ class App(TkinterDnD.Tk):
                 extension = extension,
                 out_dir_path = os.path.join(out_dir_path, 'segments'),
                 min_conf = min_confidence,
-                max_segments = 28800, # number of 3-second segments in 24 hours
+                max_segments = np.iinfo(np.int32).max, # no maximum
                 seg_length = seglength,
                 threads = threads
             )
@@ -566,8 +485,8 @@ if __name__ == "__main__":
 
     print('Launching gui...')
 
-    customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
-    customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
+    customtkinter.set_appearance_mode("Dark")
+    customtkinter.set_default_color_theme("green")
 
     app = App()
     app.mainloop()

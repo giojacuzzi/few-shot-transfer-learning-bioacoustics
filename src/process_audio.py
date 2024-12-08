@@ -10,9 +10,9 @@ import pandas as pd
 import os
 import shutil
 import time
+import numpy as np
 
 # Add BirdNET-Analyzer to the Python path
-# print('process_audio.py')
 birdnet_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'submodules', 'BirdNET-Analyzer'))
 if birdnet_path not in sys.path:
     print(f'Adding BirdNET-Analyzer to sys.path {birdnet_path}')
@@ -243,7 +243,7 @@ def main(args):
         extension = extension,
         out_dir_path = os.path.join(args.out_path_predictions, 'segments'),
         min_conf = args.min_confidence,
-        max_segments = 28800, # number of 3-second segments in 24 hours
+        max_segments = np.iinfo(np.int32).max, # no maximum
         seg_length = 3.0,
         threads = args.threads
     )
@@ -280,6 +280,5 @@ if __name__ == "__main__":
             "--ensemble_weights", "models/ensemble/ensemble_weights.txt",
             "--min_confidence", "0.5",
             "--threads", "8"
-            # "--cleanup"
         ])
     main(args)
