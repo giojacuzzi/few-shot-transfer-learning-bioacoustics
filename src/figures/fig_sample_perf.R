@@ -90,7 +90,6 @@ plot_pr
 selected_species_prt = ggplot(perf_selected_species, aes(x = threshold)) +
   geom_path(aes(y = recall, linetype = "Recall", color = model)) +
   geom_path(aes(y = precision, linetype = "Precision", color = model)) +
-  # geom_path(aes(y = f1, linetype = "F1", color = model)) +
   facet_wrap(~ label, ncol = 3) +
   scale_color_manual(values = c("Target" = "royalblue", "Source" = "salmon")) +
   scale_linetype_manual(values = c("Recall" = "dashed", "Precision" = "solid", "F1" = "dotted")) +

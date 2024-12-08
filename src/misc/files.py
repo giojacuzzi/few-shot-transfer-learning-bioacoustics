@@ -1,5 +1,6 @@
 import os
 from .log import *
+import re
 
 # Find all selection table files under a root directory
 def find_files(directory, suffix=None, prefix=None, exclude_dirs=[]):
@@ -18,7 +19,6 @@ def find_files(directory, suffix=None, prefix=None, exclude_dirs=[]):
 # Function to parse serial number, date, and time from a raw detection audio filename,
 # e.g. "SMA00556_20200526_050022_3400.8122" or "_SMA00309_20200424_031413"
 def parse_metadata_from_detection_audio_filename(filename):
-    # print(f"parse_metadata_from_detection_audio_filename {filename}")
     pattern = r'SMA(\d+)_([0-9]{8})_([0-9]{6})$'
     match = re.search(pattern, filename)
     if match:

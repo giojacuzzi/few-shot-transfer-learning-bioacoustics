@@ -20,7 +20,6 @@ import pandas as pd
 from misc.log import *
 from misc.files import *
 from perf.perf_metrics import *
-import sys
 
 overwrite_prediction_cache = False
 overwrite_metadata_cache = False
@@ -43,7 +42,7 @@ if not os.path.exists(out_dir_target):
 source_class_labels = pd.read_csv(os.path.abspath(f'models/source/source_species_list.txt'), header=None)[0].tolist()
 target_class_labels = pd.read_csv(os.path.abspath(f'models/target/target_species_list.txt'), header=None)[0].tolist()
 
-preexisting_labels_to_evaluate = source_class_labels #[l for l in target_class_labels if l in source_class_labels]
+preexisting_labels_to_evaluate = source_class_labels
 target_labels_to_evaluate = target_class_labels
 
 print(f"{len(preexisting_labels_to_evaluate)} preexisting labels to evaluate:")
@@ -54,7 +53,6 @@ print(target_labels_to_evaluate)
 perf_metrics_and_thresholds = pd.read_csv(f'results/{target_model_stub}/test/sample_perf/metrics_complete.csv')
 
 # Data culling – get minimum confidence score to retain a prediction for analysis (helps speed up analysis process considerably)
-# labels_to_evaluate = [label.split('_')[1].lower() for label in preexisting_labels_to_evaluate]
 class_thresholds = perf_metrics_and_thresholds
 class_thresholds['label'] = class_thresholds['label'].str.lower()
 threshold_min_Tp  = min(class_thresholds['Tp'])
@@ -183,7 +181,7 @@ for model in models:
     # Caching
     if overwrite_metadata_cache:
         counter = 1
-        for label in model_labels_to_evaluate: # model_labels_to_evaluate
+        for label in model_labels_to_evaluate:
             print(f'Caching metadata for class "{label}" predictions ({counter})...')
             counter += 1
             print('Copying relevant data...')
@@ -390,7 +388,6 @@ for threshold_label in threshold_labels:
         print('Average species richness percentage difference by strata:')
         merged_df = pd.merge(site_key, site_species_counts, left_on='site', right_on='sites_detected', how='inner')
         average_percentage_Δ_by_stratum = merged_df.groupby('stratum')['sr_delta_pcnt'].mean()
-        # print('Species richness percentage difference:')
         print('average SR percent difference by stratum:')
         print(average_percentage_Δ_by_stratum)
   

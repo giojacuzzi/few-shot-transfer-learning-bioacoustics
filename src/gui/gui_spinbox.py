@@ -2,6 +2,7 @@ import customtkinter
 from typing import Callable, Union
 import numpy as np
 
+# Spinbox adapted from Tom Schimansky https://github.com/TomSchimansky/CustomTkinter/wiki/Create-new-widgets-(Spinbox)
 class Spinbox(customtkinter.CTkFrame):
     def __init__(self, *args,
                  width: int = 100,
