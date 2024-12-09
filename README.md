@@ -22,6 +22,7 @@ With the application window open, configure an analysis and/or segment process b
 - Install dependencies to a [virtual python environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) (.venv) that is used exclusively for this project. Create the environment manually, or via VS Code.
 
 ### Prerequisites
+- Windows 7+ or MacOS 10.12+ operating system (64-bit). Note that the version of TensorFlow currently used alongside BirdNET is not natively compatible with Apple Silicon.
 - [Python](https://www.python.org/downloads/) 3.9+ 64-bit (3.10 recommended, ensure "Add path to environment variables" is checked during install)
 
 ### Package dependencies

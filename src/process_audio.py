@@ -264,21 +264,5 @@ if __name__ == "__main__":
     parser.add_argument("--min_confidence", type=float, help="Minimum confidence score to retain a detection (float)")
     parser.add_argument("--threads", type=int, help="Number of cores used by the processing pool (<= number of physical cores available on your computer) (int)")
 
-    # TODO: these hard-coded defaults are here for debugging; remove for distribution
-    if len(sys.argv) > 1:
-        args = parser.parse_args()
-    else:
-        log.print_warning('No arguments provided. Using default values...')
-        # Define default values
-        args = parser.parse_args([
-            "/Users/giojacuzzi/Desktop/input",
-            "/Users/giojacuzzi/Desktop/output",
-            "--out_filetype", "csv",
-            "--slist", "models/ensemble/ensemble_species_list.txt",
-            "--target_model_filepath",  "models/target/OESF_1.0/OESF_1.0.tflite",
-            "--use_ensemble",
-            "--ensemble_weights", "models/ensemble/ensemble_weights.txt",
-            "--min_confidence", "0.5",
-            "--threads", "8"
-        ])
+    args = parser.parse_args()
     main(args)
