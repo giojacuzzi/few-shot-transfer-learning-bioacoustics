@@ -208,7 +208,8 @@ def segment(
             min_conf=min_conf,
             max_segments=max_segments,
             seg_length=seg_length,
-            threads=threads
+            threads=threads,
+            filter_dc=True # remove DC offset
         )
         segments_main_wrapper(args)
 
