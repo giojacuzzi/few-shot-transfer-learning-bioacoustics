@@ -1,7 +1,7 @@
 # Calculate and plot results of training sample size experiment
 #
 # Input:
-# - Segment level performance metrics for target models in the sample size experiment at TODO "results/{target_model_stub}/test/sample_perf/threshold_perf_{model_tag}"
+# - Segment level performance metrics for target models in the sample size experiment at TODO "results/{target_model_stub}/test/segment_perf/threshold_perf_{model_tag}"
 # -  Sample size counts for target models in the sample size experiment at TODO ""
 #
 # Output:
