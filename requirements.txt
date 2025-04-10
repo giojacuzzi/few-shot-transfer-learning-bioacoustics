@@ -3,7 +3,7 @@ tensorflow==2.15.0 # Windows users may need to enable "long paths"
 librosa==0.10.1
 resampy==0.4.3
 pandas==2.2.2
-seaborn-0.13.2
+seaborn==0.13.2
 pyarrow==18.1.0
 tqdm==4.67.1
 

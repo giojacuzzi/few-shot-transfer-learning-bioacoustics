@@ -1,7 +1,7 @@
 # Plot segment level performance comparisons between pre-trained source and custom target models
 #
 # Input:
-# - Threshold performance results at "results/{model_stub}/test/sample_perf/threshold_perf_{model_tag}"
+# - Threshold performance results at "results/{model_stub}/test/segment_perf/threshold_perf_{model_tag}"
 # - Figure labels table ("data/figures/fig_labels.csv")
 # - Site presence/absence table ("data/test/site_presence_absence.csv")
 #
@@ -21,8 +21,8 @@ library(patchwork)
 library(stringr)
 source('src/figures/global.R')
 
-path_source = paste('results/', model_stub, '/test/sample_perf/threshold_perf_source', sep='')
-path_target = paste('results/', model_stub, '/test/sample_perf/threshold_perf_target', sep='')
+path_source = paste('results/', model_stub, '/test/segment_perf/threshold_perf_source', sep='')
+path_target = paste('results/', model_stub, '/test/segment_perf/threshold_perf_target', sep='')
 
 fig_labels = read.csv('data/figures/fig_labels.csv')
 
@@ -71,7 +71,7 @@ plot_threshold_pr = ggplot(perf_present, aes(x = threshold)) +
   facet_wrap(~ label, ncol = 7, scales = "free_y") +
   scale_color_manual(values = c("Target" = "royalblue", "Source" = "salmon")) +
   scale_linetype_manual(values = c("Recall" = "dashed", "Precision" = "solid", "F1" = "dotted")) +
-  labs(title = "Sample level test performance", x = "Threshold", y = "Performance", color = 'Model', linetype = 'Metric') +
+  labs(title = "Segment level test performance", x = "Threshold", y = "Performance", color = 'Model', linetype = 'Metric') +
   theme_bw() + theme(aspect.ratio = 1)
 plot_threshold_pr
 ggsave(file=paste0("results/figures/plot_threshold_pr", ".png"), plot=plot_threshold_pr, width=12, height=16)
@@ -93,7 +93,7 @@ selected_species_prt = ggplot(perf_selected_species, aes(x = threshold)) +
   facet_wrap(~ label, ncol = 3) +
   scale_color_manual(values = c("Target" = "royalblue", "Source" = "salmon")) +
   scale_linetype_manual(values = c("Recall" = "dashed", "Precision" = "solid", "F1" = "dotted")) +
-  labs(title = "Sample level test performance", x = "Threshold", y = "Performance", color = 'Model', linetype = 'Metric') +
+  labs(title = "segment level test performance", x = "Threshold", y = "Performance", color = 'Model', linetype = 'Metric') +
   theme_bw() +
   theme(panel.grid.minor = element_blank(), aspect.ratio = 1)
 selected_species_prt

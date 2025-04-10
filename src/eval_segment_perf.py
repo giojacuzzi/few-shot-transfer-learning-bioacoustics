@@ -8,13 +8,13 @@
 #
 # Output:
 # - Intermediate prediction scores for source and target models at "data/interm/{target_model_stub}/{evaluation_dataset}/{model}"
-# - Threshold performance values and final performance metrics results at "results/{target_model_stub}/{evaluation_dataset}/sample_perf" (Table 1 [1/2], A.1).
+# - Threshold performance values and final performance metrics results at "results/{target_model_stub}/{evaluation_dataset}/segment_perf" (Table 1 [1/2], A.1).
 #
 # After running, visualize results with figs/figs_segment_perf.R
 #
 # User-defined parameters:
 evaluation_dataset = 'test' # 'validation' or 'test'
-target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_LR0.001_BS10_HU0_LSFalse_US0_N10_I0', or None to only evaluate pre-trained model
+target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'OESF_1.0', or None to only evaluate pre-trained model
 evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio")
 overwrite_prediction_cache = False
 plot_precision_recall = False
@@ -29,7 +29,7 @@ import pandas as pd
 import shutil
 import sys
 
-results_out_dir = f'results/{target_model_stub}/{evaluation_dataset}/sample_perf'
+results_out_dir = f'results/{target_model_stub}/{evaluation_dataset}/segment_perf'
 if not os.path.exists(results_out_dir):
     os.makedirs(results_out_dir)
 
@@ -60,7 +60,7 @@ sort_by      = 'confidence' # Column to sort dataframe by
 ascending    = False        # Column sort direction
 save_to_file = True         # Save output to a file
 if evaluation_dataset == 'validation' and target_model_stub != None: # Validation dataset with target model
-    out_dir = f'data/interim/{target_model_stub}/validation/sample_perf'
+    out_dir = f'data/interim/{target_model_stub}/validation/segment_perf'
     target_model_parent_stub = target_model_stub.split('_')  # parent dir
     target_model_parent_stub = '_'.join(target_model_parent_stub[:-2])
     target_model_dir_path = f'models/target/{target_model_parent_stub}/{target_model_stub}'
@@ -68,7 +68,7 @@ elif evaluation_dataset == 'test': # Test dataset
     if target_model_stub == None: # Source model
         out_dir = 'data/interim/test/source'
     else: # Target model
-        out_dir = f'data/interim/{target_model_stub}/test/sample_perf' #f'data/test/{target_model_stub}'
+        out_dir = f'data/interim/{target_model_stub}/test/segment_perf' #f'data/test/{target_model_stub}'
     target_model_dir_path = f'models/target/{target_model_stub}'
 
 # Analyzer config
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     performance_metrics = pd.DataFrame()
 
     for model in models:
-        print(f'BEGIN MODEL EVALUATION {model} (sample level) ---------------------------------------------------------------------------')
+        print(f'BEGIN MODEL EVALUATION {model} (segment level) ---------------------------------------------------------------------------')
 
         if model == out_dir_source:
             model_labels_to_evaluate = [label.split('_')[1].lower() for label in preexisting_labels_to_evaluate]

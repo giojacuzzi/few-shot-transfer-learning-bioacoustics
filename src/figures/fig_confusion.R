@@ -7,7 +7,7 @@
 # Input:
 # - Confusion matrix of incorrect prediction labels
 # - Table of figure labels and group membership (e.g. order, family)
-# - Complete sample level performance metrics for the model under consideration
+# - Complete segment level performance metrics for the model under consideration
 #
 # Output:
 # - Hierarchical edge bundling plot (Fig 3)
@@ -33,10 +33,10 @@ source('src/figures/global.R')
 node_alpha_max = 0.2
 
 # Load requisite data
-path_confusion_mtx = paste('results/', model_stub, '/test/sample_perf/', model_to_evaluate, '/confusion_matrix/confusion_matrix_T0.5.csv', sep='')
+path_confusion_mtx = paste('results/', model_stub, '/test/segment_perf/', model_to_evaluate, '/confusion_matrix/confusion_matrix_T0.5.csv', sep='')
 confusion_mtx = read.csv(path_confusion_mtx, row.names=1, check.names = FALSE)
 
-path_perf_metrics = paste('results/', model_stub, '/test/sample_perf/metrics_complete.csv', sep='')
+path_perf_metrics = paste('results/', model_stub, '/test/segment_perf/metrics_complete.csv', sep='')
 perf_metrics = read.csv(path_perf_metrics)
 
 labels = read.csv('data/figures/fig_labels.csv')

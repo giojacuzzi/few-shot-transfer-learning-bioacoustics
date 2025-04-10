@@ -3,7 +3,7 @@
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
 # - Source and target labels lists (e.g. "models/source/source_species_list.txt" and "models/target/OESF_1.0/OESF_1.0_Labels.txt")
-# - Complete sample level performance metrics ("results/{target_model_stub}/sample_perf/metrics_complete.csv")
+# - Complete segment level performance metrics ("results/{target_model_stub}/segment_perf/metrics_complete.csv")
 # - Path to directory containing prediction scores from both the source and target models for the entire monitoring period under evaluation, saved to "data/interim/{target_model_stub}/test/site_perf/raw_predictions/{model_tag}". (Note these data are NOT produced by this script; you must generate them via process_audio or the GUI)
 # - Table containing site true presence and absence for all species ("data/test/site_presence_absence.csv")
 # - Site key associating site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
@@ -50,7 +50,7 @@ print(preexisting_labels_to_evaluate)
 print(f"{len(target_labels_to_evaluate)} target labels to evaluate:")
 print(target_labels_to_evaluate)
 
-perf_metrics_and_thresholds = pd.read_csv(f'results/{target_model_stub}/test/sample_perf/metrics_complete.csv')
+perf_metrics_and_thresholds = pd.read_csv(f'results/{target_model_stub}/test/segment_perf/metrics_complete.csv')
 
 # Data culling – get minimum confidence score to retain a prediction for analysis (helps speed up analysis process considerably)
 class_thresholds = perf_metrics_and_thresholds
