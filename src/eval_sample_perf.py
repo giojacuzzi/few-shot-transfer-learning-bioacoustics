@@ -1,4 +1,4 @@
-# Evaluate audio sample level performance of a custom target model on an evaluation dataset (e.g. validation, test), and compare performance with a pre-trained source model.
+# Evaluate audio segment level performance of a custom target model on an evaluation dataset (e.g. validation, test), and compare performance with a pre-trained source model.
 #
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
@@ -8,15 +8,15 @@
 #
 # Output:
 # - Intermediate prediction scores for source and target models at "data/interm/{target_model_stub}/{evaluation_dataset}/{model}"
-# - Threshold performance values and final performance metrics results at "results/{target_model_stub}/{evaluation_dataset}/sample_perf"
+# - Threshold performance values and final performance metrics results at "results/{target_model_stub}/{evaluation_dataset}/sample_perf" (Table 1 [1/2], A.1).
 #
-# Afterwards, plot results with figs/fig_sample_perf.R
+# After running, visualize results with figs/figs_segment_perf.R
 #
 # User-defined parameters:
 evaluation_dataset = 'test' # 'validation' or 'test'
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_LR0.001_BS10_HU0_LSFalse_US0_N10_I0', or None to only evaluate pre-trained model
 evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio")
-overwrite = False
+overwrite_prediction_cache = False
 plot_precision_recall = False
 #############################################
 
@@ -47,6 +47,7 @@ target_class_labels = pd.read_csv(os.path.abspath(f'models/target/target_species
 novel_labels_to_evaluate = [l for l in target_class_labels if l not in source_class_labels]
 preexisting_labels_to_evaluate = source_class_labels #[l for l in target_class_labels if l in source_class_labels]
 target_labels_to_evaluate = target_class_labels
+
 all_labels = list(set(source_class_labels + target_class_labels))
 
 print(f"{len(preexisting_labels_to_evaluate)} preexisting labels to evaluate:")
@@ -111,11 +112,11 @@ if __name__ == '__main__':
     # Normalize file paths to support both mac and windows
     out_dir = os.path.normpath(out_dir)
 
-    if overwrite and os.path.exists(out_dir):
+    if overwrite_prediction_cache and os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     
     if os.path.exists(out_dir):
-        print_warning('Raw audio data already processed, loading previous detection results for model(s)...')
+        print_warning('Raw audio data already processed, loading previous prediction results for model(s)...')
     else:
         import process_audio
 
@@ -304,6 +305,74 @@ if __name__ == '__main__':
 
         if plot_precision_recall:
             plt.show()
+
+        # If desired, calculate probabilistic score thresholds as per:
+        # Wood, C. M., and S. Kahl. 2024. Guidelines for appropriate use of BirdNET scores and other detector outputs. Journal of Ornithology 165:777–782. https://doi.org/10.1007/s10336-024-02144-5
+        if False:
+            print(f"Calculating probability thresholds for '{label_under_evaluation}'...")
+            for label_under_evaluation in model_labels_to_evaluate:
+                detection_labels = predictions[predictions['label_predicted'] == label_under_evaluation]
+                detection_labels.loc[detection_labels['label_truth'] == detection_labels['label_predicted'], 'label_truth'] = 1
+                detection_labels['label_truth'] = pd.to_numeric(detection_labels['label_truth'], errors='coerce')
+                print(detection_labels)
+
+                def conf_to_logit(c):
+                    print(f'c {c}')
+                    c = min(max(c, 0.00001), 1.0 - 0.00001) # guard against undefined logit for exceptionally low/high scores beyond model rounding limits
+                    return np.log(c / (1 - c))
+                
+                def logit_to_conf(l):
+                    return 1 / (1 + np.exp(-l))
+
+                # Convert confidence scores to logit scale
+                detection_labels["score"] = detection_labels["confidence"].apply(conf_to_logit) 
+                # OR
+                # detection_labels["score"] = detection_labels["confidence"] # unitless confidence score scale
+
+                # Define features (X) and target (y)
+                model_x = detection_labels[["score"]]
+                model_y = detection_labels["label_truth"]
+
+                if not set(model_y) == {0, 1}:
+                    print_warning(f'Skipping, out of set len {len(set(model_y))}')
+                    continue
+
+                # Fit logistic regression model
+                model = LogisticRegression()
+                model.fit(model_x, model_y)
+
+                # Desired probability of true positive (p)
+                p = 0.95
+
+                # Calculate the threshold
+                intercept = model.intercept_[0]  # Intercept (bias term)
+                coefficient = model.coef_[0][0]  # Coefficient for 'score'
+                p_threshold = (np.log(p / (1 - p)) - intercept) / coefficient
+                print(f"Threshold to achieve TP probability {p}: {p_threshold} | {logit_to_conf(p_threshold)}")
+
+                # Generate data for the regression line
+                x_range = pd.DataFrame({"score": np.linspace(model_x["score"].min(), model_x["score"].max(), 100)})  # Range of scores
+                y_pred = model.predict_proba(x_range)[:, 1]  # Predicted probabilities (positive class)
+
+                # Plot data points
+                plt.scatter(model_x[model_y == 0], np.zeros_like(model_x[model_y == 0]), marker='_', color='blue', label="Prediction (0)")
+                plt.scatter(model_x[model_y == 1], np.ones_like(model_x[model_y == 1]), marker='+', color='blue', label="Prediction (1)")
+
+                # Plot regression curve
+                plt.plot(x_range, y_pred, color="red", label="Regression")
+
+                # Plot threshold line
+                plt.axhline(y=p, color="black", linestyle ="--", linewidth=1)
+                plt.axvline(x=p_threshold, color="black", linestyle="--", linewidth=1, label=f"Threshold p(TP)≥{p} = {np.round(logit_to_conf(p_threshold), 2)}")
+
+                # Add labels and legend
+                plt.xlabel("Score (logit scale)")
+                plt.ylabel("Probability")
+                plt.title(f"{label_under_evaluation}")
+                plt.legend(loc="lower right")
+
+                # Show plot
+                plt.show()
 
     print('FINAL RESULTS (vocalization level) ---------------------------------------------------------------------------')
     performance_metrics = performance_metrics.drop_duplicates()

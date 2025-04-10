@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt # Plotting
 import sklearn.metrics          # Classifier evaluation
 import numpy as np              # Mathematics
 from misc.log import *
+from sklearn.linear_model import LogisticRegression
 import os
 
 # detection_labels - a dataframe of detections with columns 'label_truth' (where a positive presence is represented by the species class label) and 'confidence'

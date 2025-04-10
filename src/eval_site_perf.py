@@ -1,4 +1,4 @@
-# Evaluate site level (presence/absence) performance of a custom target model on the test dataset, and compare performance with a pre-trained source model.
+# Evaluate site level (presence-absence) performance of a custom target model on the test dataset, and compare performance with a pre-trained source model.
 #
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
@@ -9,7 +9,7 @@
 # - Site key associating site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
 #
 # Output:
-# - Site level performance metrics and species richness estimates across thresholds
+# - Site level performance metrics and species richness estimates across thresholds (Table 1 [2/2], A.2, A.5).
 #
 # User-defined parameters:
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
@@ -391,7 +391,7 @@ for threshold_label in threshold_labels:
         print('average SR percent difference by stratum:')
         print(average_percentage_Δ_by_stratum)
   
-print('FINAL MEAN SITE LEVEL SPECIES RICHNESS ESTIMATE:')
+print('FINAL MEAN SITE LEVEL SPECIES RICHNESS ESTIMATE:') # Table A.5
 print(site_level_perf_mean.to_string())
 fp = f'{out_dir}/speciesrichness_summary.csv'
 site_level_perf_mean.to_csv(fp)

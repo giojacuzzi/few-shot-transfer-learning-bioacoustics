@@ -1,16 +1,15 @@
-# Plot performance comparisons between pre-trained source and custom target models
+# Plot segment level performance comparisons between pre-trained source and custom target models
 #
 # Input:
-# - Threshold performance results at "results/{target_model_stub}/test/sample_perf/threshold_perf_{model_tag}"
+# - Threshold performance results at "results/{model_stub}/test/sample_perf/threshold_perf_{model_tag}"
 # - Figure labels table ("data/figures/fig_labels.csv")
 # - Site presence/absence table ("data/test/site_presence_absence.csv")
 #
 # Output:
-# - Precision-recall threshold and AUC plots
-# - Confidence score distribution plots
+# - Plots for precision-recall threshold, AUC, and confidence score distribution (Figs 4, A.1, A.2)
 #
 # User-defined parameters
-target_model_stub = 'OESF_1.0'
+model_stub = 'OESF_1.0'
 labels_to_plot = c("sooty grouse", "marbled murrelet", "golden-crowned kinglet", "belted kingfisher", "black-throated gray warbler", "wilson's warbler")
 ###########################
 
@@ -20,10 +19,10 @@ library(ggplot2)
 library(cowplot)
 library(patchwork)
 library(stringr)
-source('src/figures/fig_global.R')
+source('src/figures/global.R')
 
-path_source = paste('results/', target_model_stub, '/test/sample_perf/threshold_perf_source', sep='')
-path_target = paste('results/', target_model_stub, '/test/sample_perf/threshold_perf_target', sep='')
+path_source = paste('results/', model_stub, '/test/sample_perf/threshold_perf_source', sep='')
+path_target = paste('results/', model_stub, '/test/sample_perf/threshold_perf_target', sep='')
 
 fig_labels = read.csv('data/figures/fig_labels.csv')
 
@@ -47,6 +46,7 @@ conf_to_logit = function(p) {
   return(log(p / (1 - p)))
 }
 
+# Combine performance metrics for both source and target models
 perf_source = load_perf(path_source, 'source')
 perf_source$f1 = 2*perf_source$recall * perf_source$precision/(perf_source$recall+perf_source$precision)
 
@@ -63,7 +63,7 @@ perf$logit = conf_to_logit(perf$threshold)
 perf_present = perf[perf$label %in% str_to_title(label_counts[label_counts$count > 0, 'label']), ]
 perf_selected_species = perf[perf$label %in% str_to_title(labels_to_plot), ]
 
-# Figure: Threshold performance for all present classes
+# Figure A.1: Differences in precision, recall, and F1 performance across decision thresholds between source (red) and target (blue) models for all present classes.
 plot_threshold_pr = ggplot(perf_present, aes(x = threshold)) +
   geom_path(aes(y = recall, linetype = "Recall", color = model)) +
   geom_path(aes(y = precision, linetype = "Precision", color = model)) +
@@ -77,16 +77,16 @@ plot_threshold_pr
 ggsave(file=paste0("results/figures/plot_threshold_pr", ".png"), plot=plot_threshold_pr, width=12, height=16)
 
 # Figure: Precision-Recall AUC for all classes
-plot_pr = ggplot(perf, aes(x = recall, y = precision, color = model)) +
+plot_pr = ggplot(perf_present, aes(x = recall, y = precision, color = model)) +
   geom_path() +
   geom_path(aes(color = model)) +
-  facet_wrap(~ label, ncol = 4, scales = "free_y") +
+  facet_wrap(~ label, ncol = 7, scales = "free_y") +
   scale_color_manual(values = c("Target" = "royalblue", "Source" = "salmon")) +
   labs(x = "Recall", y = "Precision") +
-  theme_bw()
+  theme_bw() + theme(aspect.ratio = 1)
 plot_pr
 
-# Figure: Threshold performance for selected species classes
+# Figure 4 (1/2): Threshold performance for selected species classes
 selected_species_prt = ggplot(perf_selected_species, aes(x = threshold)) +
   geom_path(aes(y = recall, linetype = "Recall", color = model)) +
   geom_path(aes(y = precision, linetype = "Precision", color = model)) +
@@ -99,20 +99,7 @@ selected_species_prt = ggplot(perf_selected_species, aes(x = threshold)) +
 selected_species_prt
 ggsave(file=paste0("results/figures/selected_species_prt", ".png"), plot=selected_species_prt, width=8, height=6)
 
-# Figure: Confidence score distributions on the logit scale
-plot_scores = ggplot() +
-  geom_density(data = subset(perf, model == "Source"), aes(x = logit), color='salmon', fill='salmon', alpha=0.6) +
-  geom_density(data = subset(perf, model == "Target"), aes(x = logit), color='royalblue', fill='royalblue', alpha=0.6) +
-  facet_wrap(~ label, ncol = 8) +
-  scale_x_continuous(name = "Confidence (logit)", breaks = c(-15,0,15), limits = c(-15,15)) +
-  ylim(0,0.5) +
-  labs(x = "Confidence (logit)", y = "Density", title = "Prediction score distributions") +
-  theme_minimal() +
-  theme(panel.grid.minor = element_blank())
-plot_scores
-ggsave(file=paste0("results/figures/plot_scores", ".png"), plot=plot_scores, width=14, height=12)
-
-# Figure: Confidence score distributions for selected species classes on the logit scale
+# Figure 4 (2/2): Confidence score distributions for selected species classes on the logit scale
 plot_scores_selected_species = ggplot() +
   geom_density(data = subset(perf_selected_species, model == "Source"), aes(x = logit), color='salmon', fill='salmon', alpha=0.6) +
   geom_density(data = subset(perf_selected_species, model == "Target"), aes(x = logit), color='royalblue', fill='royalblue', alpha=0.6) +
@@ -124,6 +111,19 @@ plot_scores_selected_species = ggplot() +
   theme(panel.grid.minor = element_blank())
 plot_scores_selected_species
 ggsave(file=paste0("results/figures/selected_species_plot_scores", ".svg"), plot=plot_scores_selected_species, width=6.81, height=3)
+
+# Figure A.2: Confidence score distributions on the logit scale
+plot_scores = ggplot() +
+  geom_density(data = subset(perf, model == "Source"), aes(x = logit), color='salmon', fill='salmon', alpha=0.6) +
+  geom_density(data = subset(perf, model == "Target"), aes(x = logit), color='royalblue', fill='royalblue', alpha=0.6) +
+  facet_wrap(~ label, ncol = 8) +
+  scale_x_continuous(name = "Confidence (logit)", breaks = c(-15,0,15), limits = c(-15,15)) +
+  ylim(0,0.5) +
+  labs(x = "Confidence (logit)", y = "Density", title = "Prediction score distributions") +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank())
+plot_scores
+ggsave(file=paste0("results/figures/plot_scores", ".png"), plot=plot_scores, width=14, height=12)
 
 # Figure: Confidence score histogram on the 0,1 (sigmoid) scale
 plot_histogram = ggplot(perf, aes(x = threshold)) +

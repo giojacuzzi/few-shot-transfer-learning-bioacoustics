@@ -7,7 +7,7 @@ This repository contains the open source software, workflow routines, and reprod
 
 > Jacuzzi G., Olden J.D. Few-shot transfer learning enables robust acoustic community monitoring at the landscape scale. ** (in press).
 
-Although this software was developed for a particular study region and set of monitoring objectives (avian biodiversity surveys in Washington's Olympic Experimental State Forest), it is designed to be freely repurposed and we encourage its use in other applications. Please cite the original publication in your references and direct any correspondance to gioj@uw.edu.
+Although this software was developed for a particular study region and set of monitoring objectives (avian biodiversity surveys in the Olympic Experimental State Forest of Washington, USA), it is designed to be freely repurposed and we encourage its use in other applications. Please cite the original publication in your references. Direct any correspondance to gioj@uw.edu, and request features or bug fixes via GitHub issues.
 
 ## Quickstart: GUI application
 
@@ -34,17 +34,17 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-This installs all required dependencies. For troubleshooting reference, see setup instructions for [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer).
+This installs all required dependencies, including a custom fork of BirdNET (version 2.4) with additional tools for model training and development. For troubleshooting reference, see setup instructions for [BirdNET-Analyzer](https://github.com/kahst/BirdNET-Analyzer).
 
 ## Contents
 - `data` – data associated with the study area and monitoring project
 - `models` - files for source, target, and ensemble models, including associated class labels lists 
 - `src` – all source code for data annotation, processing, and analysis
-    - `figures` – R scripts to generate figure plots and visualizations
+    - `figures` – R scripts to generate figure plots and data visualizations
     - `gui` – supporting files for the GUI
     - `misc` – helper modules and logging
     - `perf` – functions for calculating raw sample and site level performance metrics
-    - `submodules` – repository dependencies (an customized fork of BirdNET-Analyzer)
+    - `submodules` – repository dependencies (a customized fork of BirdNET-Analyzer)
 
 ## Audio classification with BirdNET and/or custom model
 Run `src/process_audio.py` to process predictions for a given directory or file with a particular model. Show arguments with `python src/process_audio.py -h`, or see documentation within the script itself.

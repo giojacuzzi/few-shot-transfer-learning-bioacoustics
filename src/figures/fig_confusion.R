@@ -10,12 +10,11 @@
 # - Complete sample level performance metrics for the model under consideration
 #
 # Output:
-# - Hierarchical edge bundling plot
+# - Hierarchical edge bundling plot (Fig 3)
 #
 # User-defined parameters
+model_stub = 'OESF_1.0'
 model_to_evaluate = 'source'
-confusion_mtx = read.csv('results/OESF_1.0/test/sample_perf/confusion_matrix/confusion_matrix_T0.5.csv', row.names=1, check.names = FALSE)
-perf_metrics = read.csv('results/OESF_1.0/test/sample_perf/metrics_complete.csv')
 ###########################
 
 library(ggraph)
@@ -29,18 +28,24 @@ library(ggraph)
 library(igraph)
 library(tidyverse)
 library(RColorBrewer)
-source('src/figures/fig_global.R')
+source('src/figures/global.R')
 
 node_alpha_max = 0.2
 
 # Load requisite data
+path_confusion_mtx = paste('results/', model_stub, '/test/sample_perf/', model_to_evaluate, '/confusion_matrix/confusion_matrix_T0.5.csv', sep='')
+confusion_mtx = read.csv(path_confusion_mtx, row.names=1, check.names = FALSE)
+
+path_perf_metrics = paste('results/', model_stub, '/test/sample_perf/metrics_complete.csv', sep='')
+perf_metrics = read.csv(path_perf_metrics)
+
 labels = read.csv('data/figures/fig_labels.csv')
 perf_metrics = perf_metrics[perf_metrics$model == model_to_evaluate,]
 perf_metrics$label = tolower(perf_metrics$label)
-perf_metrics$PR_AUC[is.na(perf_metrics$PR_AUC)] <- 0.5 # override missing AUC values for absent classes for visibility
+perf_metrics$PR_AUC[is.na(perf_metrics$PR_AUC)] = 0.5 # override missing AUC values for absent classes for visibility
 
-confusion_mtx <- confusion_mtx[, !names(confusion_mtx) %in% labels_to_remove]
-confusion_mtx <- confusion_mtx[!rownames(confusion_mtx) %in% labels_to_remove, ]
+confusion_mtx = confusion_mtx[, !names(confusion_mtx) %in% labels_to_remove]
+confusion_mtx = confusion_mtx[!rownames(confusion_mtx) %in% labels_to_remove, ]
 
 # Organize hierarchy
 get_group = function(x) {
@@ -90,23 +95,22 @@ origin_to_groups = data.frame(from="origin", to=unique(groups))
 groups_to_subgroups = data.frame(from = unname(groups), to = names(groups))
 groups_to_subgroups$family = sapply(groups_to_subgroups$to, get_family)
 groups_to_subgroups = groups_to_subgroups %>% arrange(from, family, to) %>% select(-family)
-priority_levels <- c("Artifact", "Abiotic", "Biotic")
-groups_to_subgroups$priority <- ifelse(groups_to_subgroups$from %in% priority_levels, match(groups_to_subgroups$from, priority_levels), length(priority_levels) + 1)
-groups_to_subgroups <- groups_to_subgroups[order(groups_to_subgroups$priority), ]
+priority_levels = c("Artifact", "Abiotic", "Biotic")
+groups_to_subgroups$priority = ifelse(groups_to_subgroups$from %in% priority_levels, match(groups_to_subgroups$from, priority_levels), length(priority_levels) + 1)
+groups_to_subgroups = groups_to_subgroups[order(groups_to_subgroups$priority), ]
 groups_to_subgroups = groups_to_subgroups %>% select(-priority)
 
-hierarchy <- rbind(origin_to_groups, groups_to_subgroups)
-
-edges <- rbind(origin_to_groups, groups_to_subgroups)
+hierarchy = rbind(origin_to_groups, groups_to_subgroups)
+edges = rbind(origin_to_groups, groups_to_subgroups)
 
 # One line per object of the hierarchy, giving features of nodes.
-vertices <- data.frame(name = unique(c(as.character(hierarchy$from), as.character(hierarchy$to))) )
+vertices = data.frame(name = unique(c(as.character(hierarchy$from), as.character(hierarchy$to))) )
 vertices$Group = sapply(vertices$name, get_order)
 vertices$Presence = as.numeric(sapply(vertices$name, get_presence))
 vertices[vertices$Group %in% c('Abiotic', 'Biotic'), 'Presence'] = 1
 
 # Retrieve PR AUC
-vertices <- vertices %>%
+vertices = vertices %>%
   left_join(perf_metrics %>% select(label, PR_AUC), by = c("name" = "label")) %>%
   rename(AUC = PR_AUC) %>%
   mutate(
@@ -115,7 +119,7 @@ vertices <- vertices %>%
   )
 
 # Create a graph network object and visualize to validate relationships
-graph_network <- graph_from_data_frame(hierarchy, vertices=vertices)
+graph_network = graph_from_data_frame(hierarchy, vertices=vertices)
 plot(graph_network, vertex.label="", edge.arrow.size=0, vertex.size=2)
 ggraph(graph_network, layout = 'dendrogram', circular = FALSE) + 
   geom_edge_link() +
@@ -123,28 +127,28 @@ ggraph(graph_network, layout = 'dendrogram', circular = FALSE) +
 ggraph(graph_network, layout = 'dendrogram', circular = TRUE) + 
   geom_edge_diagonal() +
   theme_void()
-from <- rownames(confusion_mtx)
-to <- colnames(confusion_mtx)
+from = rownames(confusion_mtx)
+to = colnames(confusion_mtx)
 
 # Establish connections
-connections <- melt(as.matrix(confusion_mtx), varnames = c("from", "to"), value.name = "value")
+connections = melt(as.matrix(confusion_mtx), varnames = c("from", "to"), value.name = "value")
 connections = connections[connections$value > 0, ]
 connections = connections[connections$from != connections$to, ]
 
 # Add additional calculations for visualization
-vertices$id <- NA
-leaves <- which(is.na( match(vertices$name, edges$from) ))
-n_leaves <- length(leaves)
-vertices$id[ leaves ] <- seq(1:n_leaves)
-vertices$angle <- 90.0 - 360.0 * vertices$id / n_leaves
-vertices$hjust <- ifelse(vertices$angle < -90.0, 1, 0)
-vertices$angle <- ifelse(vertices$angle < -90.0, vertices$angle+180.0, vertices$angle)
+vertices$id = NA
+leaves = which(is.na( match(vertices$name, edges$from) ))
+n_leaves = length(leaves)
+vertices$id[ leaves ] = seq(1:n_leaves)
+vertices$angle = 90.0 - 360.0 * vertices$id / n_leaves
+vertices$hjust = ifelse(vertices$angle < -90.0, 1, 0)
+vertices$angle = ifelse(vertices$angle < -90.0, vertices$angle+180.0, vertices$angle)
 
-graph_network <- igraph::graph_from_data_frame( edges, vertices=vertices )
+graph_network = igraph::graph_from_data_frame( edges, vertices=vertices )
 
 # Refer connection object leaf ids
-connect_from <- match( connections$from, vertices$name)
-connect_to <-match( connections$to, vertices$name)
+connect_from = match( connections$from, vertices$name)
+connect_to =match( connections$to, vertices$name)
 
 # Plot hierarchical edge bundling
 g = ggraph(graph_network, layout = 'dendrogram', circular = TRUE) + 
