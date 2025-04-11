@@ -4,7 +4,7 @@
 #
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
-# - Site level performance metrics and species richness estimates across thresholds
+# - Site level performance metrics and species richness estimates across thresholds (e.g. "results/OESF_1.0/test/site_perf/source/site_perf_source.csv")
 # - Site key associating site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
 #
 # Output:
@@ -14,12 +14,14 @@
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
 #############################################
 
-import pandas as pd
-import numpy as np
 import ast
+import numpy as np
+import os
+import pandas as pd
 from misc.log import *
 
 site_key = pd.read_csv('data/site_key.csv')
+print('Site metadata:')
 print(site_key)
 
 # Site-level stratum with the most site errors using minimum error threshold, both models
@@ -27,19 +29,18 @@ print(site_key)
 path_site_perf_source = f'results/{target_model_stub}/test/site_perf/source/site_perf_source.csv'
 site_perf_source = pd.read_csv(path_site_perf_source)
 site_perf_source = site_perf_source[site_perf_source['threshold'] == '0.8']
-print(site_perf_source) 
 
 path_site_perf_target = f'results/{target_model_stub}/test/site_perf/target/site_perf_target.csv'
 site_perf_target = pd.read_csv(path_site_perf_target)
 site_perf_target = site_perf_target[site_perf_target['threshold'] == '0.9']
-print(site_perf_target.to_string())
 
 def get_list_from_string(s):
     return(ast.literal_eval(s.replace(" ", ",")))
 
 for model in ['source_all', 'target_all', 'source', 'target']:
 
-    print(f'Evaluating model {model}...')
+    print('-' * os.get_terminal_size().columns)
+    print(f'Evaluating model {model}...\n')
 
     if model == 'source_all':
         site_perf = site_perf_source.reset_index()
@@ -50,8 +51,6 @@ for model in ['source_all', 'target_all', 'source', 'target']:
         site_perf = site_perf_source[site_perf_source['label'].isin(site_perf_target['label'])].reset_index()
     elif model == 'target':
         site_perf = site_perf_target.reset_index()
-    
-    print(site_perf['label'])
 
     # For each species
     species_by_stratum_site_perf = pd.DataFrame()
@@ -105,34 +104,28 @@ for model in ['source_all', 'target_all', 'source', 'target']:
         
         species_by_stratum_site_perf = pd.concat([species_by_stratum_site_perf,temp_stratum_error_rates], ignore_index=True)
 
-    print(f'species_by_stratum_error_rates')
-    print(species_by_stratum_site_perf.to_string())
-
-    print('ERROR RATE:')
+    print('Error rate:')
     results_error_rates = species_by_stratum_site_perf.pivot(index='class', columns='stratum', values='error_rate')
     results_error_rates.reset_index(inplace=True)
     results_error_rates['model'] = model
 
     results_error_rates_means = results_error_rates.mean(numeric_only=True)
-    print(f'model "{model}" results_error_rates_means:')
     print(results_error_rates_means.round(2))
 
-    print('FALSE POSITIVE RATE:')
+    print('False positive rate:')
     results_fp_rates = species_by_stratum_site_perf.pivot(index='class', columns='stratum', values='fp_rate')
     results_fp_rates.reset_index(inplace=True)
     results_fp_rates['model'] = model
 
     results_fp_rates_means = results_fp_rates.mean(numeric_only=True)
-    print(f'model "{model}" results_fp_rates_means:')
     print(results_fp_rates_means.round(2))
 
-    print('FALSE NEGATIVE RATE:')
+    print('False negative rate:')
     results_fn_rates = species_by_stratum_site_perf.pivot(index='class', columns='stratum', values='fn_rate')
     results_fn_rates.reset_index(inplace=True)
     results_fn_rates['model'] = model
 
     results_fn_rates_means = results_fn_rates.mean(numeric_only=True)
-    print(f'model "{model}" results_fn_rates_means:')
     print(results_fn_rates_means.round(2))
 
-    print_success(f'Model "{model}" finished.')
+    print_success(f'Finished evaluating site perf by factor for model "{model}"')

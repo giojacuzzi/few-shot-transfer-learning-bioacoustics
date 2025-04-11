@@ -1,3 +1,4 @@
+#############################################
 # Visualize relationships between labels within a confusion matrix of incorrectly labeled species predictions
 # via hierarchical edge bundling, organizing labels by type, order, and family. This identifies recurrent
 # sources of confusion and novel signals that define the unique acoustic context of the target domain. 
@@ -15,7 +16,7 @@
 # User-defined parameters
 model_stub = 'OESF_1.0'
 model_to_evaluate = 'source'
-###########################
+#############################################
 
 library(ggraph)
 library(igraph)

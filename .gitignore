@@ -27,6 +27,8 @@
 !/data/class_labels.csv
 !/data/site_key.csv
 !/data/test/site_presence_absence.csv
+!/data/test/test_data_annotations.csv
+!/data/figures/fig_labels.csv
 
 # Apple files
 .DS_Store

@@ -1,3 +1,5 @@
+# Construct GUI executable 
+
 import customtkinter
 from tkinterdnd2 import *
 from CTkMenuBar import *

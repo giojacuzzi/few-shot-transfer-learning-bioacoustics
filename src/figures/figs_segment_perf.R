@@ -1,3 +1,4 @@
+#############################################
 # Plot segment level performance comparisons between pre-trained source and custom target models
 #
 # Input:
@@ -11,7 +12,7 @@
 # User-defined parameters
 model_stub = 'OESF_1.0'
 labels_to_plot = c("sooty grouse", "marbled murrelet", "golden-crowned kinglet", "belted kingfisher", "black-throated gray warbler", "wilson's warbler")
-###########################
+#############################################
 
 library(dplyr)
 library(tools)
@@ -93,7 +94,7 @@ selected_species_prt = ggplot(perf_selected_species, aes(x = threshold)) +
   facet_wrap(~ label, ncol = 3) +
   scale_color_manual(values = c("Target" = "royalblue", "Source" = "salmon")) +
   scale_linetype_manual(values = c("Recall" = "dashed", "Precision" = "solid", "F1" = "dotted")) +
-  labs(title = "segment level test performance", x = "Threshold", y = "Performance", color = 'Model', linetype = 'Metric') +
+  labs(title = "Segment level test performance", x = "Threshold", y = "Performance", color = 'Model', linetype = 'Metric') +
   theme_bw() +
   theme(panel.grid.minor = element_blank(), aspect.ratio = 1)
 selected_species_prt

@@ -1,12 +1,13 @@
+#############################################
 # Evaluate site level (presence-absence) performance of a custom target model on the test dataset, and compare performance with a pre-trained source model.
 #
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
 # - Source and target labels lists (e.g. "models/source/source_species_list.txt" and "models/target/OESF_1.0/OESF_1.0_Labels.txt")
-# - Complete segment level performance metrics ("results/{target_model_stub}/segment_perf/metrics_complete.csv")
-# - Path to directory containing prediction scores from both the source and target models for the entire monitoring period under evaluation, saved to "data/interim/{target_model_stub}/test/site_perf/raw_predictions/{model_tag}". (Note these data are NOT produced by this script; you must generate them via process_audio or the GUI)
-# - Table containing site true presence and absence for all species ("data/test/site_presence_absence.csv")
-# - Site key associating site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
+# - Complete segment level performance metrics ("results/{target_model_stub}/test/segment_perf/metrics_complete.csv")
+# - Path to directory containing prediction scores from both the source and target models for the entire monitoring period under evaluation, saved to "data/cache/{target_model_stub}/test/site_perf/raw_predictions/{model_tag}". (Note these data are NOT produced by this script; you must generate them via process_audio or the GUI)
+# - Table containing ground-truth site presence and absence matrix for all species ("data/test/site_presence_absence.csv")
+# - Site key associating relevant metadata, i.e. site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
 #
 # Output:
 # - Site level performance metrics and species richness estimates across thresholds (Table 1 [2/2], A.2, A.5).
@@ -21,8 +22,8 @@ from misc.log import *
 from misc.files import *
 from perf.perf_metrics import *
 
-overwrite_prediction_cache = False
-overwrite_metadata_cache = False
+overwrite_prediction_cache = False # Generate new predictions by analyzing the raw (continuous) audio monitoring data
+overwrite_metadata_cache = False   # Retrieve new metadata by analyzing the raw audio files
 
 min_site_detections = 0
 
@@ -52,20 +53,19 @@ print(target_labels_to_evaluate)
 
 perf_metrics_and_thresholds = pd.read_csv(f'results/{target_model_stub}/test/segment_perf/metrics_complete.csv')
 
-# Data culling – get minimum confidence score to retain a prediction for analysis (helps speed up analysis process considerably)
+# Data culling – calculate minimum confidence score to retain a prediction for analysis (helps speed up analysis process considerably)
 class_thresholds = perf_metrics_and_thresholds
 class_thresholds['label'] = class_thresholds['label'].str.lower()
 threshold_min_Tp  = min(class_thresholds['Tp'])
 threshold_min_Tf1 = min(class_thresholds['Tf1'])
 class_thresholds['min'] = class_thresholds.apply(lambda row: min(row['Tp'], row['Tf1'], 0.5), axis=1)
 class_thresholds.loc[class_thresholds['min'] < 0.01, 'min'] = 0.5 # set missing classes to 0.5 minimum
-print(class_thresholds[['label', 'Tp', 'Tf1', 'min']].to_string())
 min_conf_dict = dict(zip(class_thresholds['label'], class_thresholds['min']))
 
 def remove_extension(f):
     return os.path.splitext(f)[0]
 
-dir_interim_site_perf = f'data/interim/{target_model_stub}/test/site_perf'
+dir_cache_site_perf = f'data/cache/{target_model_stub}/test/site_perf'
 
 # Load and cache analyzer prediction scores for ALL raw audio files
 if overwrite_prediction_cache:
@@ -73,9 +73,9 @@ if overwrite_prediction_cache:
         print(f'Loading {model} prediction scores for test examples...')
 
         if model == out_dir_source:
-            score_dir_root = f'{dir_interim_site_perf}/raw_predictions/source'
+            score_dir_root = f'{dir_cache_site_perf}/raw_predictions/source'
         elif model == out_dir_target:
-            score_dir_root = f'{dir_interim_site_perf}/raw_predictions/target'
+            score_dir_root = f'{dir_cache_site_perf}/raw_predictions/target'
 
         score_files = []
         score_files.extend(find_files(score_dir_root, '.csv')) 
@@ -105,24 +105,27 @@ if overwrite_prediction_cache:
         predictions['label_predicted'] = predictions['label_predicted'].str.lower()
 
         if model == out_dir_target:
-            predictions.to_parquet(f'{dir_interim_site_perf}/cached_predictions/source/predictions_source.parquet')
+            predictions.to_parquet(f'{dir_cache_site_perf}/predictions/source/source.parquet')
         elif model == out_dir_target:
-            predictions.to_parquet(f'{dir_interim_site_perf}/cached_predictions/target/predictions_target.parquet')
+            predictions.to_parquet(f'{dir_cache_site_perf}/predictions/target/target.parquet')
 
-print('Loading target predictions from cache...')
-predictions_target = pd.read_parquet(f'{dir_interim_site_perf}/cached_predictions/target/predictions_target.parquet')
+path_predictions_target = f'{dir_cache_site_perf}/predictions/target/target.parquet'
+print(f'Loading target predictions from cache {path_predictions_target}...')
+predictions_target = pd.read_parquet(path_predictions_target)
 print(f'Loaded {len(predictions_target)} predictions')
-print('Loading source predictions from cache...')
-predictions_source = pd.read_parquet(f'{dir_interim_site_perf}/cached_predictions/source/predictions_source.parquet')
+path_predictions_source = f'{dir_cache_site_perf}/predictions/source/source.parquet'
+print(f'Loading source predictions from cache {path_predictions_source}...')
+predictions_source = pd.read_parquet(path_predictions_source)
 print(f'Loaded {len(predictions_source)} predictions')
 
-print(f'PERFORMANCE EVALUATION - site level ================================================================================================')
+print('=' * os.get_terminal_size().columns)
+print(f'Performance evaluation (site level)\n')
 
 # Load site true presence and absence
-print('Loading site true presence and absence...')
+print('Loading site true presence and absence data...')
 site_presence_absence = pd.read_csv('data/test/site_presence_absence.csv', header=None)
 
-print('Site key:')
+print('Site metadata:')
 site_key = pd.read_csv('data/site_key.csv')
 site_key['date_start'] = pd.to_datetime(site_key['date_start'], format='%Y%m%d').dt.date
 site_key['date_end'] = pd.to_datetime(site_key['date_end'], format='%Y%m%d').dt.date
@@ -160,7 +163,6 @@ def get_matching_site(row):
 site_level_perf = pd.DataFrame()
 site_level_perf_mean = pd.DataFrame()
 for model in models:
-    print(f'BEGIN MODEL EVALUATION {model} (site level) --------------------------------------------------------------------')
 
     if model == out_dir_source:
         # Find matching unique site ID for each prediction
@@ -176,6 +178,8 @@ for model in models:
 
     cpp['site'] = ''
 
+    print('-' * os.get_terminal_size().columns)
+    print(f'Begin "{model_tag}" model evaluation {model} (site level)\n')
     print('Calculate site-level performance per label...')
     
     # Caching
@@ -208,19 +212,17 @@ for model in models:
                 site = get_matching_site(row)
                 predictions_for_label.at[i, 'site'] = site
 
-            predictions_for_label.to_parquet(f'{dir_interim_site_perf}/cached_predictions/{model_tag}/predictions_for_label_{label}_{model_tag}.parquet')
+            predictions_for_label.to_parquet(f'{dir_cache_site_perf}/predictions/{model_tag}/class_label/{label}_{model_tag}.parquet')
     
     metrics = perf_metrics_and_thresholds[perf_metrics_and_thresholds['model'] == model_tag]
     metrics['label'] = metrics['label'].str.lower()
 
     counter = 1
+    print(f'Evaluating site level performance for each class...')
     for label in model_labels_to_evaluate:
-        print(f'Evaluating site-level performance for class "{label}" ({counter})...')
-        counter += 1
 
         # Load predictions_for_label for this label from cache
-        print(f'Retrieving {model_tag} predictions with metadata...')
-        predictions_for_label = pd.read_parquet(f'{dir_interim_site_perf}/cached_predictions/{model_tag}/predictions_for_label_{label}_{model_tag}.parquet')
+        predictions_for_label = pd.read_parquet(f'{dir_cache_site_perf}/predictions/{model_tag}/class_label/{label}_{model_tag}.parquet')
 
         label_metrics = metrics[metrics['label'] == label]
         Tp = label_metrics['Tp'].iloc[0]
@@ -246,7 +248,6 @@ for model in models:
 
         site_level_perf = pd.concat([site_level_perf, species_perf], ignore_index=True)
 
-    print(f'FINAL RESULTS {model_tag} (site level) ------------------------------------------------------------------------------------------------------')
     site_level_perf = site_level_perf.reindex(sorted(site_level_perf.columns), axis=1)
     if model == out_dir_source:
         fp = f'{out_dir_source}/site_perf_source.csv'
@@ -254,7 +255,7 @@ for model in models:
     elif model == out_dir_target:
         fp = f'{out_dir_target}/site_perf_target.csv'
         site_level_perf[site_level_perf["model"] == out_dir_target].to_csv(fp, index=False)
-    print_success(f'Saved site level perf for model {model_tag} to {fp}')
+    print_success(f'Saved site level perf for model "{model_tag}" to {fp}')
 
 file_source_perf = f'{out_dir_source}/site_perf_source.csv'
 file_target_perf = f'{out_dir_target}/site_perf_target.csv'
@@ -280,7 +281,8 @@ perf_combined[f'accuracy_max_{threshold_to_evaluate}_model'] = np.where(
 )
 perf_combined.to_csv(f'{out_dir}/site_metrics_combined.csv', index=False)
 
-print('SITE LEVEL PERF COMPARISON ==================================================================================================')
+print('=' * os.get_terminal_size().columns)
+print('Site level performance comparison\n')
 
 labels_to_compare = [l for l in target_labels_to_evaluate if l in preexisting_labels_to_evaluate]
 labels_to_compare = [l.split('_')[1].lower() for l in labels_to_compare]
@@ -288,11 +290,10 @@ print('Labels to compare:')
 print(labels_to_compare)
 
 for threshold_label in threshold_labels:
-    print_warning(f'Evaluating site-level performance for {threshold_label}...')
+    print(f'Evaluating site-level performance for {threshold_label}...')
 
     threshold_results = pd.DataFrame()
     for model in models:
-        print(f'Evaluating model {model}...')
 
         # Get the results matching the model and the threshold, model_results
         model_results = site_level_perf[(site_level_perf['threshold'] == threshold_label) & (site_level_perf['model'] == model)].copy()
@@ -324,23 +325,26 @@ for threshold_label in threshold_labels:
     
     fp = f'{out_dir}/results_{threshold_label}.csv'
     result.to_csv(fp)
-    print_success(f'Saved results to {fp}')
+    print_success(f'Saved results to {fp}') # Table A.2
 
-# SPECIES RICHNESS COMPARISON
-print('SPECIES RICHNESS COMPARISON ==================================================================================================')
+    if threshold_label == '0.9': # Table 1 (2/2)
+        print(result)
+
+print('=' * os.get_terminal_size().columns)
+print('Species richness comparison\n')
 
 # For each threshold
 for threshold_label in threshold_labels:
-    print_warning(f'Evaluating species richness performance for {threshold_label}...')
+    print(f'Evaluating species richness performance for {threshold_label}...')
 
     # For each model
     for model in models:
-        print(f'Evaluating model {model}...')
 
         if model == out_dir_source:
             model_tag = 'source'
         elif model == out_dir_target:
             model_tag = 'target'
+        print(f'Evaluating model "{model_tag}"...')
 
         # Get the results matching the model and the threshold, model_results
         model_results = site_level_perf[(site_level_perf['threshold'] == threshold_label) & (site_level_perf['model'] == model)].copy()
@@ -360,7 +364,6 @@ for threshold_label in threshold_labels:
             model_results = pd.concat([model_results, source_results], ignore_index=True)
         
         # Calculate stats and store for later, compute stat deltas between models for each threshold
-        print('Site species counts:') # Species richness comparison
         df_exploded = model_results.explode('sites_detected') # make one row per site-species detection
         site_species_counts = df_exploded.groupby('sites_detected')['label'].count() # get count of species (i.e. labels) for each site
         site_species_counts = site_species_counts.reset_index(name='species_count')
@@ -372,26 +375,23 @@ for threshold_label in threshold_labels:
         # Display the updated DataFrame
         fp = f'{out_dir}/{model_tag}/speciesrichness_{model_tag}_{threshold_label}.csv'
         site_species_counts.to_csv(fp)
-        print_success(f'Saved site species richness counts to {fp}')
+        print_success(f'Saved model {model} site species richness counts to {fp}')
 
-        print(f"Total average species richness percentage: {site_species_counts['sr_delta_pcnt'].mean()}")
         mean_site_perf_at_threshold = pd.DataFrame({
             "sr_delta": [site_species_counts['sr_delta'].mean()],
             "sr_delta_pcnt": [site_species_counts['sr_delta_pcnt'].mean()], # total average species richness % of truth
             "threshold":  [threshold_label],
             "model":      [model]
         })
-        print(mean_site_perf_at_threshold)
         site_level_perf_mean = pd.concat([site_level_perf_mean, mean_site_perf_at_threshold], ignore_index=True)
 
         # Determine effect of habitat type on performance
-        print('Average species richness percentage difference by strata:')
+        print('Average richness percentage difference by stratum:')
         merged_df = pd.merge(site_key, site_species_counts, left_on='site', right_on='sites_detected', how='inner')
         average_percentage_Δ_by_stratum = merged_df.groupby('stratum')['sr_delta_pcnt'].mean()
-        print('average SR percent difference by stratum:')
         print(average_percentage_Δ_by_stratum)
   
-print('FINAL MEAN SITE LEVEL SPECIES RICHNESS ESTIMATE:') # Table A.5
+print('\nFinal mean site level species richness estimates:') # Table A.5
 print(site_level_perf_mean.to_string())
 fp = f'{out_dir}/speciesrichness_summary.csv'
 site_level_perf_mean.to_csv(fp)

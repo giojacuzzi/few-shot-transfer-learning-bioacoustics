@@ -1,9 +1,9 @@
-# Evaluate performance for a single class (species)
+# Helper functions for model performance evaluation
 
-import pandas as pd             # Data manipulation
-import matplotlib.pyplot as plt # Plotting
-import sklearn.metrics          # Classifier evaluation
-import numpy as np              # Mathematics
+import pandas as pd             # data manipulation
+import matplotlib.pyplot as plt # plotting
+import sklearn.metrics          # classifier evaluation
+import numpy as np              # mathematics
 from misc.log import *
 from sklearn.linear_model import LogisticRegression
 import os
@@ -78,7 +78,7 @@ def evaluate_species_performance(detection_labels, species, plot, digits=3, titl
         ax2.legend(loc='lower left')
         ax2.set_box_aspect(1)
 
-    # Plot ROC
+    # ROC AUC evaluation
     if True:
         fpr, tpr, roc_th = sklearn.metrics.roc_curve(detection_labels['label_truth'], detection_labels['confidence'], pos_label=species, drop_intermediate=False)
 
@@ -87,19 +87,6 @@ def evaluate_species_performance(detection_labels, species, plot, digits=3, titl
         else:
             print_warning(f"Could not compute ROC AUC ({n_P} positive, {n_N} negative examples).")
             roc_auc = np.NaN
-
-        # if plot:
-        #     # ns_probs = [species for _ in range(len(detection_labels))] # no skill classifier that only predicts 1 for all examples
-        #     # ns_roc_auc_score = sklearn.metrics.roc_auc_score(detection_labels['label_truth'], ns_probs, pos_label=species)
-        #     # ns_fpr, ns_tpr, _ = sklearn.metrics.roc_curve(detection_labels['label_truth'], ns_probs, pos_label=species, drop_intermediate=False)
-        #     # plt.plot(ns_fpr, ns_tpr, linestyle='--', label='Baseline', color='gray')
-        #     ax3.plot(fpr, tpr, marker='.', label='Classifier')
-        #     ax3.set_xlabel('False Positive Rate')
-        #     ax3.set_ylabel('True Positive Rate (Recall)')
-        #     ax3.set_title(f'ROC (AUC {roc_auc:.2f})', fontsize=font_size)
-        #     ax3.set_xlim([0.0-padding, 1.0+padding])
-        #     ax3.set_ylim([0.0-padding, 1.0+padding])
-        #     ax3.legend(loc='lower right')
     
     if plot:
         plt.tight_layout()

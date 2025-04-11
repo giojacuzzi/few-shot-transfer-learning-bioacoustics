@@ -1,3 +1,4 @@
+#############################################
 # Evaluate audio segment level performance of a custom target model on an evaluation dataset (e.g. validation, test), and compare performance with a pre-trained source model.
 #
 # Input:
@@ -7,16 +8,16 @@
 # - Source and target labels lists (e.g. "models/source/source_species_list.txt" and "models/target/OESF_1.0/OESF_1.0_Labels.txt")
 #
 # Output:
-# - Intermediate prediction scores for source and target models at "data/interm/{target_model_stub}/{evaluation_dataset}/{model}"
+# - Cached prediction scores for source and target models at "data/cache/{target_model_stub}/{evaluation_dataset}/{model}"
 # - Threshold performance values and final performance metrics results at "results/{target_model_stub}/{evaluation_dataset}/segment_perf" (Table 1 [1/2], A.1).
 #
-# After running, visualize results with figs/figs_segment_perf.R
+# After running, visualize results with figures/figs_segment_perf.R
 #
 # User-defined parameters:
 evaluation_dataset = 'test' # 'validation' or 'test'
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'OESF_1.0', or None to only evaluate pre-trained model
 evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio")
-overwrite_prediction_cache = False
+overwrite_prediction_cache = False # Generate new predictions by analyzing the raw audio segment data
 plot_precision_recall = False
 #############################################
 
@@ -60,15 +61,15 @@ sort_by      = 'confidence' # Column to sort dataframe by
 ascending    = False        # Column sort direction
 save_to_file = True         # Save output to a file
 if evaluation_dataset == 'validation' and target_model_stub != None: # Validation dataset with target model
-    out_dir = f'data/interim/{target_model_stub}/validation/segment_perf'
+    out_dir = f'data/cache/{target_model_stub}/validation/segment_perf'
     target_model_parent_stub = target_model_stub.split('_')  # parent dir
     target_model_parent_stub = '_'.join(target_model_parent_stub[:-2])
     target_model_dir_path = f'models/target/{target_model_parent_stub}/{target_model_stub}'
 elif evaluation_dataset == 'test': # Test dataset
     if target_model_stub == None: # Source model
-        out_dir = 'data/interim/test/source'
+        out_dir = 'data/cache/test/source'
     else: # Target model
-        out_dir = f'data/interim/{target_model_stub}/test/segment_perf' #f'data/test/{target_model_stub}'
+        out_dir = f'data/cache/{target_model_stub}/test/segment_perf' #f'data/test/{target_model_stub}'
     target_model_dir_path = f'models/target/{target_model_stub}'
 
 # Analyzer config
@@ -85,7 +86,6 @@ training_data_path       = 'data/training'
 def remove_extension(f):
     return os.path.splitext(f)[0]
 
-# -----------------------------------------------------------------------------
 if __name__ == '__main__':
 
     # Get the evaluation data as a dataframe with columns:
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     # 'file' - the basename of the audio file
 
     if evaluation_dataset == 'validation':
-        development_data = pd.read_csv(f'data/interim/{target_model_parent_stub}/training/{target_model_stub}/combined_development_files.csv')
+        development_data = pd.read_csv(f'data/cache/{target_model_parent_stub}/training/{target_model_stub}/combined_development_files.csv')
         evaluation_data = development_data[development_data['dataset'] == 'validation']
         evaluation_data.loc[:, 'file'] = evaluation_data['file'].apply(remove_extension)
 
@@ -102,8 +102,8 @@ if __name__ == '__main__':
         evaluation_data = evaluation_data[evaluation_data['target'].isin(all_labels)]
         evaluation_data['labels'] = evaluation_data['labels'].fillna('')
 
-    out_dir_source = out_dir + '/source'
-    out_dir_target = out_dir + '/target'
+    out_dir_source = out_dir + '/predictions/source'
+    out_dir_target = out_dir + '/predictions/target'
     if target_model_stub == None:
         models = [out_dir_source]
     else:
@@ -116,11 +116,14 @@ if __name__ == '__main__':
         shutil.rmtree(out_dir)
     
     if os.path.exists(out_dir):
-        print_warning('Raw audio data already processed, loading previous prediction results for model(s)...')
+        print_warning('Raw audio data already processed, loading cached prediction results for model(s)...')
     else:
         import process_audio
 
-        # Process evaluation examples with both classifiers -----------------------------------------------------------------------------
+        print('=' * os.get_terminal_size().columns)
+        print(f'Generate prediction cache from raw audio data\n')
+
+        # Process evaluation examples with both classifiers
         if target_model_stub != None:
             # Custom target classifier model
             print(f"Processing evaluation set with target model {target_analyzer_filepath}...")
@@ -149,7 +152,8 @@ if __name__ == '__main__':
     performance_metrics = pd.DataFrame()
 
     for model in models:
-        print(f'BEGIN MODEL EVALUATION {model} (segment level) ---------------------------------------------------------------------------')
+        print('=' * os.get_terminal_size().columns)
+        print(f'Begin "{model_tag}" model evaluation {model} (segment level)\n')
 
         if model == out_dir_source:
             model_labels_to_evaluate = [label.split('_')[1].lower() for label in preexisting_labels_to_evaluate]
@@ -158,10 +162,10 @@ if __name__ == '__main__':
             model_labels_to_evaluate = [label.split('_')[1].lower() for label in target_labels_to_evaluate]
             model_tag = 'target'
 
-        print(f'Evaluating {len(model_labels_to_evaluate)} labels: {model_labels_to_evaluate}')
+        print(f'Evaluating {len(model_labels_to_evaluate)} labels')
 
-        # Load analyzer detection scores for each evaluation file example
-        print(f'Loading "{model_tag}" detection scores for evaluation examples from {model}...')
+        # Load analyzer prediction scores for each evaluation file example
+        print(f'Loading prediction scores for evaluation examples from {model}...')
         score_files = []
         score_files.extend(files.find_files(model, '.csv', exclude_dirs=['threshold_perf'])) 
         predictions = pd.DataFrame()
@@ -374,7 +378,9 @@ if __name__ == '__main__':
                 # Show plot
                 plt.show()
 
-    print('FINAL RESULTS (vocalization level) ---------------------------------------------------------------------------')
+    print('-' * os.get_terminal_size().columns)
+    print('Final performance results (segment level)\n')
+
     performance_metrics = performance_metrics.drop_duplicates()
     performance_metrics.sort_values(by=['PR_AUC', 'label', 'model'], inplace=True)
     performance_metrics.loc[performance_metrics['N_pos'] == 0, ['PR_AUC', 'AP', 'ROC_AUC', 'f1_max']] = np.nan
