@@ -10,7 +10,7 @@ Although this software was developed for a particular study region and set of mo
 
 ## Quickstart: GUI application for audio analysis
 
-Download the latest release via [the GitHub repository](https://github.com/giojacuzzi/few-shot-transfer-learning-bioacoustics/releases), then launch the `Model Ensemble Interface` executable.
+Download the latest release assets via [the GitHub repository](https://github.com/giojacuzzi/few-shot-transfer-learning-bioacoustics/releases), unzip, and then launch the `Model Ensemble Interface` executable.
 
 With the application window open, configure an analysis and/or segment process by drag-and-dropping files or directories and adjusting the interface parameters. A configuration can be saved as a `.json` *session* file (`File > Save session`), and opened for repeated use (`File > Open session`). Click the `Launch process` button to begin your analysis, and monitor progress via the console log.
 
