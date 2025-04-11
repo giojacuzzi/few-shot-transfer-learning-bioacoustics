@@ -1,4 +1,4 @@
-#############################################
+##########################################################################################
 # Plot segment level performance comparisons between pre-trained source and custom target models
 #
 # Input:
@@ -12,7 +12,7 @@
 # User-defined parameters
 model_stub = 'OESF_1.0'
 labels_to_plot = c("sooty grouse", "marbled murrelet", "golden-crowned kinglet", "belted kingfisher", "black-throated gray warbler", "wilson's warbler")
-#############################################
+##########################################################################################
 
 library(dplyr)
 library(tools)

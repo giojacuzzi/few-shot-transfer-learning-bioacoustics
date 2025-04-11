@@ -1,3 +1,4 @@
+##########################################################################################
 # Evaluate site level performance metrics across habitat strata factors (early seral stand
 # initiation, mid seral competitive exclusion, mid seral thinned, and late seral mature)
 # for each model, including all species and only shared species.
@@ -12,13 +13,16 @@
 #
 # User-defined parameters:
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
-#############################################
+##########################################################################################
 
 import ast
 import numpy as np
 import os
 import pandas as pd
 from misc.log import *
+
+print('=' * os.get_terminal_size().columns)
+print('Begin site performance evaluation by factor\n')
 
 site_key = pd.read_csv('data/site_key.csv')
 print('Site metadata:')

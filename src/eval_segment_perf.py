@@ -1,4 +1,4 @@
-#############################################
+##########################################################################################
 # Evaluate audio segment level performance of a custom target model on an evaluation dataset (e.g. validation, test), and compare performance with a pre-trained source model.
 #
 # Input:
@@ -19,7 +19,7 @@ target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from dire
 evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio")
 overwrite_prediction_cache = False # Generate new predictions by analyzing the raw audio segment data
 plot_precision_recall = False
-#############################################
+##########################################################################################
 
 from misc.log import *
 from misc import files
@@ -116,7 +116,7 @@ if __name__ == '__main__':
         shutil.rmtree(out_dir)
     
     if os.path.exists(out_dir):
-        print_warning('Raw audio data already processed, loading cached prediction results for model(s)...')
+        print_warning(f'Raw audio data already processed, loading cached prediction results for model(s) from {out_dir}...')
     else:
         import process_audio
 
@@ -152,8 +152,6 @@ if __name__ == '__main__':
     performance_metrics = pd.DataFrame()
 
     for model in models:
-        print('=' * os.get_terminal_size().columns)
-        print(f'Begin "{model_tag}" model evaluation {model} (segment level)\n')
 
         if model == out_dir_source:
             model_labels_to_evaluate = [label.split('_')[1].lower() for label in preexisting_labels_to_evaluate]
@@ -161,6 +159,9 @@ if __name__ == '__main__':
         elif model == out_dir_target:
             model_labels_to_evaluate = [label.split('_')[1].lower() for label in target_labels_to_evaluate]
             model_tag = 'target'
+
+        print('=' * os.get_terminal_size().columns)
+        print(f'Begin "{model_tag}" model evaluation {model} (segment level)\n')
 
         print(f'Evaluating {len(model_labels_to_evaluate)} labels')
 

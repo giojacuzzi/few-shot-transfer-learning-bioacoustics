@@ -1,4 +1,4 @@
-#############################################
+##########################################################################################
 # Construct a (segment level) confusion matrix of all incorrectly labeled species predictions above
 # a score threhold (e.g. >= 0.5) to quantify frequency of errors across all biotic and abiotic labels.
 #
@@ -17,7 +17,7 @@ threshold = 0.5
 target_model_stub = 'OESF_1.0'
 model_tag = 'source' # or 'target
 plot_confusion_matrix = False
-#############################################
+##########################################################################################
 
 import matplotlib.pyplot as plt
 import os
@@ -27,8 +27,11 @@ from sklearn.metrics import confusion_matrix
 from misc import files
 from misc.log import *
 
-model = f'data/cache/{target_model_stub}/test/segment_perf/{model_tag}'
+model = f'data/cache/{target_model_stub}/test/segment_perf/predictions/{model_tag}'
 out_dir = f'results/{target_model_stub}/test/segment_perf/{model_tag}/confusion_matrix'
+
+print('=' * os.get_terminal_size().columns)
+print('Begin prediction confusion evaluation\n')
 
 # Load analyzer prediction scores for each evaluation file example
 print(f'Loading "{model_tag}" model prediction scores for evaluation examples from {model}...')

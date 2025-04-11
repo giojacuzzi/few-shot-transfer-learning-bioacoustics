@@ -1,4 +1,4 @@
-#############################################
+##########################################################################################
 # Evaluate site level (presence-absence) performance of a custom target model on the test dataset, and compare performance with a pre-trained source model.
 #
 # Input:
@@ -15,7 +15,7 @@
 # User-defined parameters:
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'custom_S1_N100_LR0.001_BS10_HU0_LSFalse_US0_I0' or None to only evaluate pre-trained model
 threshold_to_evaluate = '0.9' # Threshold for complete site metrics
-#############################################
+##########################################################################################
 
 import pandas as pd
 from misc.log import *
@@ -119,7 +119,7 @@ predictions_source = pd.read_parquet(path_predictions_source)
 print(f'Loaded {len(predictions_source)} predictions')
 
 print('=' * os.get_terminal_size().columns)
-print(f'Performance evaluation (site level)\n')
+print(f'Begin performance evaluation (site level)\n')
 
 # Load site true presence and absence
 print('Loading site true presence and absence data...')

@@ -1,5 +1,7 @@
+##########################################################################################
 # Command line interface to process audio data.
 # Run `python src/process_audio.py -h` to display help.
+##########################################################################################
 
 from multiprocessing import freeze_support
 

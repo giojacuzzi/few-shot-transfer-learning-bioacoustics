@@ -1,11 +1,17 @@
+##########################################################################################
 # Calculate and plot results of training sample size experiment
 #
 # Input:
-# - Segment level performance metrics for target models in the sample size experiment at TODO "results/{target_model_stub}/test/segment_perf/threshold_perf_{model_tag}"
-# -  Sample size counts for target models in the sample size experiment at TODO ""
+# - Segment level performance metrics for target models in the sample size experiment (e.g. "results/sample_size_experiment/test/segment_perf/metrics_{model_tag}.csv")
+# -  Sample size counts for target models in the sample size experiment (e.g. "data/models/target/...trained_class_counts.csv")
 #
 # Output:
 # - Plots for training sample size performance experiment (Fig A.3)
+#
+# User-defined parameters
+path_root_all_perf_metrics = 'results/sample_size_experiment'
+path_root_trained_class_counts = 'results/sample_size_experiment' # note that train_fewshot.py generates these to the 'data/models' directory
+##########################################################################################
 
 library(dplyr)
 library(ggplot2)
@@ -13,17 +19,17 @@ library(viridis)
 library(stringr)
 
 # Retrieve all segment level performance metrics for target models in the sample size experiment
-files_metrics = list.files(path = 'data/results', pattern = "\\metrics_custom.csv$", full.names = TRUE, recursive = TRUE)
+files_metrics = list.files(path = path_root_all_perf_metrics, pattern = "\\metrics_target.csv$", full.names = TRUE, recursive = TRUE)
 metrics = data.frame()
 for (file in files_metrics) {
   data = read.csv(file)
   data$label = tolower(data$label)
   metrics = rbind(metrics, data)
 }
-metrics$model_dir = gsub("data/test/|/custom", "", metrics$model)
+metrics$model_dir = gsub("data/test/|/target", "", metrics$model)
 
 # Count the number of training samples for each class
-files_class_counts = unique(file.path('data/models/target', paste0(metrics$model_dir, '/trained_class_counts.csv')))
+files_class_counts = unique(file.path(path_root_trained_class_counts, paste0(metrics$model_dir, '/trained_class_counts.csv')))
 class_counts = data.frame()
 for (file in files_class_counts) {
   data = read.csv(file)
