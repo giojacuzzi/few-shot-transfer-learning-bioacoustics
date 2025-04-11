@@ -1,15 +1,14 @@
 # few-shot-transfer-learning-bioacoustics
-Few-shot transfer learning with BirdNET to enable acoustic monitoring of wildlife communities.
 
 ### About
 
 This repository contains the open source software, workflow routines, and reproducible methods used in the research article:
 
-> Jacuzzi G., Olden J.D. Few-shot transfer learning enables robust acoustic community monitoring at the landscape scale. ** (in press).
+> Jacuzzi G., Olden J.D. Few-shot transfer learning enables robust acoustic community monitoring at the landscape scale. ** (in review).
 
 Although this software was developed for a particular study region and set of monitoring objectives (avian biodiversity surveys in the Olympic Experimental State Forest of Washington, USA), it is designed to be freely repurposed and we encourage its use in other applications. Please cite the original publication in your references. Direct any correspondance to gioj@uw.edu, and request features or bug fixes via GitHub issues.
 
-## Quickstart: GUI application
+## Quickstart: GUI application for audio analysis
 
 Download the latest release via [the GitHub repository](https://github.com/giojacuzzi/few-shot-transfer-learning-bioacoustics/releases), then launch the `Model Ensemble Interface` executable.
 
