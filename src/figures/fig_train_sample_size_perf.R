@@ -66,11 +66,11 @@ if (FALSE) {
 plot_sample_size = ggplot(data = data) +
   geom_line(aes(x = count, y = PR_AUC, color = count)) +
   scale_colour_viridis(option = "D") +
-  facet_wrap(~ str_to_title(label), ncol = 7, scales = "free_x") +
-  theme_bw() + theme(aspect.ratio = 1) +
-  labs(color = "Samples", x = "Training sample size", y = "PR AUC")
+  facet_wrap(~ str_trunc(str_to_title(label), width=24), ncol = 7, scales = "free_x") +
+  labs(color = "Samples", x = "Training sample size", y = "PR AUC") +
+  theme_bw() + theme(aspect.ratio = 1, strip.text = element_text(size = 6))
 plot_sample_size
-ggsave(file=paste0("data/figures/plot_sample_size", ".png"), plot=plot_sample_size, width=12, height=16)
+ggsave(file=paste0("results/figures/plot_sample_size", ".png"), plot=plot_sample_size, width=12, height=16)
 
 # Calculate the mean PR AUC for each training sample size for species classes
 labels_to_exclude = c('abiotic aircraft', 'abiotic logging', 'abiotic rain', 'abiotic vehicle', 'abiotic wind', 'background', 'biotic anuran', 'biotic insect')

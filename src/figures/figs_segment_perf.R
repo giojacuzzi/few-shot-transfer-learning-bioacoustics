@@ -69,11 +69,11 @@ plot_threshold_pr = ggplot(perf_present, aes(x = threshold)) +
   geom_path(aes(y = recall, linetype = "Recall", color = model)) +
   geom_path(aes(y = precision, linetype = "Precision", color = model)) +
   geom_path(aes(y = f1, linetype = "F1", color = model)) +
-  facet_wrap(~ label, ncol = 7, scales = "free_y") +
+  facet_wrap(~ str_trunc(as.character(label), width=24), ncol = 7, scales = "free_y") +
   scale_color_manual(values = c("Target" = "royalblue", "Source" = "salmon")) +
   scale_linetype_manual(values = c("Recall" = "dashed", "Precision" = "solid", "F1" = "dotted")) +
   labs(title = "Segment level test performance", x = "Threshold", y = "Performance", color = 'Model', linetype = 'Metric') +
-  theme_bw() + theme(aspect.ratio = 1)
+  theme_bw() + theme(aspect.ratio = 1, strip.text = element_text(size = 6))
 plot_threshold_pr
 ggsave(file=paste0("results/figures/plot_threshold_pr", ".png"), plot=plot_threshold_pr, width=12, height=16)
 
