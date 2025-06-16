@@ -58,7 +58,7 @@ origin_points$count = 0
 data = bind_rows(data, origin_points)
 
 # Inspect performance for individual classes
-class_labels = c('pileated woodpecker', 'pacific wren', 'sooty grouse')
+class_labels = c('red crossbill', 'violet-green swallow', 'pileated woodpecker', 'pacific wren', 'sooty grouse')
 for (class_label in class_labels) {
   data_l = data[data$label == class_label,]
   print(data_l[, c('label', 'PR_AUC', 'count')] %>% arrange(count))
