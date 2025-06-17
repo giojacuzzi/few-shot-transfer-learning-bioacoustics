@@ -16,7 +16,7 @@
 # User-defined parameters:
 evaluation_dataset = 'test' # 'validation' or 'test'
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'OESF_1.0', or None to only evaluate pre-trained model
-evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio")
+evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio"), if overwriting prediction cache
 overwrite_prediction_cache = False # Generate new predictions by analyzing the raw audio segment data
 plot_precision_recall = False
 ##########################################################################################
