@@ -1,10 +1,10 @@
 # few-shot-transfer-learning-bioacoustics
 
-### About
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15694435.svg)](https://doi.org/10.5281/zenodo.15694435)
 
 This repository contains the open source software, workflow routines, and reproducible methods used in the research article:
 
-> Jacuzzi G., Olden J.D. Few-shot transfer learning enables robust acoustic community monitoring at the landscape scale. *Ecological Informatics* (2025).
+> Jacuzzi G., Olden J.D. Few-shot transfer learning enables robust acoustic community monitoring at the landscape scale. *Ecological Informatics* (in press, 2025).
 
 Although this software was developed for a particular study region and set of monitoring objectives (avian biodiversity surveys in the Olympic Experimental State Forest of Washington, USA), it is designed to be freely repurposed and we encourage its use in other applications. Please cite the original publication in your references. Direct any correspondance to gioj@uw.edu, and request features or bug fixes via GitHub issues.
 
