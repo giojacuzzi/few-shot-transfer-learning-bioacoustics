@@ -4,7 +4,7 @@
 
 This repository contains the open source software, workflow routines, and reproducible methods used in the research article:
 
-> Jacuzzi G., Olden J.D. Few-shot transfer learning enables robust acoustic community monitoring at the landscape scale. *Ecological Informatics* (in press, 2025).
+> Jacuzzi, G., Olden, J.D., 2025. Few-shot transfer learning enables robust acoustic monitoring of wildlife communities at the landscape scale. Ecological Informatics 90, 103294. [doi.org/10.1016/j.ecoinf.2025.103294](https://doi.org/10.1016/j.ecoinf.2025.103294)
 
 Although this software was developed for a particular study region and set of monitoring objectives (avian biodiversity surveys in the Olympic Experimental State Forest of Washington, USA), it is designed to be freely repurposed and we encourage its use in other applications. Please cite the original publication in your references. Direct any correspondance to gioj@uw.edu, and request features or bug fixes via GitHub issues.
 
