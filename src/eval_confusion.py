@@ -1,6 +1,10 @@
 ##########################################################################################
-# Construct a (segment level) confusion matrix of all incorrectly labeled species predictions above
-# a score threhold (e.g. >= 0.5) to quantify frequency of errors across all biotic and abiotic labels.
+# Quantify the frequency of occurrence in incorrectly classified species predictions (false
+# positives and false negatives) using a decision threshold (e.g. 0.5) on bounded (sigmoid
+# transformed) confidence scores, treating each species class prediction as an independent
+# binary classification task. The resulting matrix summarizes patterns of confusion between
+# classes by counting how often sounds that were not truly produced by a species occurred in
+# incorrect predictions for that species.
 #
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")

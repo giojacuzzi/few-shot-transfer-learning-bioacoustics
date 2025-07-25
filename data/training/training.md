@@ -12,3 +12,4 @@ The `training_data_annotations.csv` table associates annotation labels with each
 | Strix varia_Barred Owl | SMA00424_20200521_020000_678.6368500000001 | "Strix varia_Barred Owl, Abiotic_Abiotic Rain" |
 | ... | ... | ... |
 
+To train a custom model (with or without k-fold cross validation), adjust the user-defined parameters in `src/submodules/BirdNET-Analyzer/pretrain_stratified_kfold.py` if desired, then run the script to generate a table of development file references for training and validation datasets. This script will output command(s) to subsequently execute via `src/submodules/BirdNET-Analyzer/train_fewshot.py` to conduct training for your requested model(s).

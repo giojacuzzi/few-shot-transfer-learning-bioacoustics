@@ -1,5 +1,6 @@
 ##########################################################################################
-# Evaluate audio segment level performance of a custom target model on an evaluation dataset (e.g. validation, test), and compare performance with a pre-trained source model.
+# Evaluate audio segment level performance of a custom target model on an evaluation dataset
+# (e.g. validation, test), and compare performance with a pre-trained source model.
 #
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
@@ -16,8 +17,8 @@
 # User-defined parameters:
 evaluation_dataset = 'test' # 'validation' or 'test'
 target_model_stub  = 'OESF_1.0' # Name of the target model to evaluate from directory "models/target/{target_model_stub}"; e.g. 'OESF_1.0', or None to only evaluate pre-trained model
-evaluation_audio_dir_path = '/Users/giojacuzzi/Library/CloudStorage/GoogleDrive-giojacuzzi@gmail.com/My Drive/Research/Projects/OESF/transfer learning/data/test' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio"), if overwriting prediction cache
-overwrite_prediction_cache = False # Generate new predictions by analyzing the raw audio segment data
+evaluation_audio_dir_path = 'data/test/audio' # Path to root directory containing all audio files for evaluation (e.g. "data/training/audio" or "data/test/audio"), if overwriting prediction cache
+overwrite_prediction_cache = False # Generate new predictions by analyzing the raw audio segment data (caching speeds up evaluation considerably)
 plot_precision_recall = False
 ##########################################################################################
 
