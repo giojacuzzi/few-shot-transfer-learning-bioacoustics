@@ -98,12 +98,12 @@ for i, row in predictions.iterrows():
     else:
         if 'unknown' in true_labels:
             continue # Skip unknown prediction
-        elif 'not_target' in true_labels:
+        elif 'not_target' in true_labels: # i.e. not focal class
             for j, a in corresponding_annotations.iterrows():
-                target = a['target']
-                if len(target.split('_')) > 1:
-                    target = a['target'].split('_')[1].lower()
-                if target != row['label_predicted']:
+                focal_class = a['focal_class']
+                if len(focal_class.split('_')) > 1:
+                    focal_class = a['focal_class'].split('_')[1].lower()
+                if focal_class != row['label_predicted']:
                     continue # Skip unknown prediction
 
     # Any predictions at this point are made in error (incorrect)

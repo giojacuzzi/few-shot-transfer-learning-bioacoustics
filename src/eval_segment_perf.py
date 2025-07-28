@@ -90,7 +90,6 @@ def remove_extension(f):
 if __name__ == '__main__':
 
     # Get the evaluation data as a dataframe with columns:
-    # 'path' - full path to the audio file
     # 'file' - the basename of the audio file
 
     if evaluation_dataset == 'validation':
@@ -100,7 +99,7 @@ if __name__ == '__main__':
 
     elif evaluation_dataset == 'test':
         evaluation_data = pd.read_csv('data/test/test_data_annotations.csv')
-        evaluation_data = evaluation_data[evaluation_data['target'].isin(all_labels)]
+        evaluation_data = evaluation_data[evaluation_data['focal_class'].isin(all_labels)]
         evaluation_data['labels'] = evaluation_data['labels'].fillna('')
 
     out_dir_source = out_dir + '/predictions/source'
@@ -260,12 +259,12 @@ if __name__ == '__main__':
                 predictions.at[i, 'label_truth'] = '0'
                 if 'unknown' in true_labels:
                     predictions.at[i, 'label_truth'] = 'unknown'
-                elif 'not_target' in true_labels:
+                elif 'not_target' in true_labels: # i.e. not focal class
                     for j, a in file_annotations.iterrows():
-                        target = a['target']
-                        if len(target.split('_')) > 1:
-                            target = a['target'].split('_')[1].lower()
-                        if target != row['label_predicted']:
+                        focal_class = a['focal_class']
+                        if len(focal_class.split('_')) > 1:
+                            focal_class = a['focal_class'].split('_')[1].lower()
+                        if focal_class != row['label_predicted']:
                             predictions.at[i, 'label_truth'] = 'unknown'
                             break
         

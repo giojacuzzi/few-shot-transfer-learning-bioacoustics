@@ -8,7 +8,7 @@
 # - Complete segment level performance metrics ("results/{target_model_stub}/test/segment_perf/metrics_complete.csv")
 # - Path to directory containing prediction scores from both the source and target models for the entire monitoring period under evaluation, saved to "data/cache/{target_model_stub}/test/site_perf/raw_predictions/{model_tag}". (Note these data are NOT produced by this script; you must generate them via process_audio or the GUI)
 # - Table containing ground-truth site presence and absence matrix for all species ("data/test/site_presence_absence.csv")
-# - Site key associating relevant metadata, i.e. site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
+# - Site key associating relevant metadata, i.e. site IDs, ARU serialnos, and habitat strata ("data/test/site_metadata.csv")
 #
 # Output:
 # - Site level performance metrics and species richness estimates across thresholds (Table 1 [2/2], A.2, A.5).
@@ -127,14 +127,14 @@ print('Loading site true presence and absence data...')
 site_presence_absence = pd.read_csv('data/test/site_presence_absence.csv', header=None)
 
 print('Site metadata:')
-site_key = pd.read_csv('data/site_key.csv')
-site_key['date_start'] = pd.to_datetime(site_key['date_start'], format='%Y%m%d').dt.date
-site_key['date_end'] = pd.to_datetime(site_key['date_end'], format='%Y%m%d').dt.date
-print(site_key)
+site_metadata = pd.read_csv('data/test/site_metadata.csv')
+site_metadata['date_start'] = pd.to_datetime(site_metadata['date_start'], format='%Y%m%d').dt.date
+site_metadata['date_end'] = pd.to_datetime(site_metadata['date_end'], format='%Y%m%d').dt.date
+print(site_metadata)
 
 site_presence_absence = site_presence_absence.iloc[3:].reset_index(drop=True)
 site_presence_absence.set_index(0, inplace=True)
-site_presence_absence.columns = site_key['site']
+site_presence_absence.columns = site_metadata['site']
 nan_rows = site_presence_absence[site_presence_absence.isna().any(axis=1)]  # Select rows with any NaN values
 if not nan_rows.empty:
     print(f"WARNING: NaN values found. Dropping...")
@@ -150,10 +150,10 @@ def within_date_range(d, start, end):
     return start.date() <= d.date() <= end.date()
 
 def get_matching_site(row):
-    match = site_key[
-        (site_key['serialno'] == row['serialno']) & 
-        (site_key['date_start'] <= row['date'].date()) & 
-        (site_key['date_end'] >= row['date'].date())
+    match = site_metadata[
+        (site_metadata['serialno'] == row['serialno']) & 
+        (site_metadata['date_start'] <= row['date'].date()) & 
+        (site_metadata['date_end'] >= row['date'].date())
     ]
     if not match.empty:
         return match.iloc[0]['site']
@@ -388,7 +388,7 @@ for threshold_label in threshold_labels:
 
         # Determine effect of habitat type on performance
         print('Average richness percentage difference by stratum:')
-        merged_df = pd.merge(site_key, site_species_counts, left_on='site', right_on='sites_detected', how='inner')
+        merged_df = pd.merge(site_metadata, site_species_counts, left_on='site', right_on='sites_detected', how='inner')
         average_percentage_Δ_by_stratum = merged_df.groupby('stratum')['sr_delta_pcnt'].mean()
         print(average_percentage_Δ_by_stratum)
   

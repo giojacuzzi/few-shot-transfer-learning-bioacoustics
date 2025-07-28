@@ -6,7 +6,7 @@
 # Input:
 # - Name stub of target model to evaluate from directory "models/target" (e.g. "OESF_1.0")
 # - Site level performance metrics and species richness estimates across thresholds (e.g. "results/OESF_1.0/test/site_perf/source/site_perf_source.csv")
-# - Site key associating site IDs, ARU serialnos, and habitat strata ("data/site_key.csv")
+# - Site key associating site IDs, ARU serialnos, and habitat strata ("data/test/site_metadata.csv")
 # - Site presence-absence data ("data/test/site_presence_absence.csv")
 #
 # Output:
@@ -28,9 +28,9 @@ from scipy.stats import pearsonr, spearmanr
 print('=' * os.get_terminal_size().columns)
 print('Begin site performance evaluation by factor\n')
 
-site_key = pd.read_csv('data/site_key.csv')
+site_metadata = pd.read_csv('data/test/site_metadata.csv')
 print('Site metadata:')
-print(site_key)
+print(site_metadata)
 
 # Site-level stratum with the most site errors using minimum error threshold, both models
 
@@ -45,8 +45,8 @@ site_perf_target = site_perf_target[site_perf_target['threshold'] == '0.9'] # th
 ## Quantify relationship between alpha diversity (species richness), numerically encoded structural complexity level, and FPR, FNR, and total error
 
 site_data = pd.DataFrame({
-    'site': site_key['site'],
-    'stratum': site_key['stratum']
+    'site': site_metadata['site'],
+    'stratum': site_metadata['stratum']
 })
 
 # Calculate site-level species richness (alpha diversity)
@@ -171,10 +171,10 @@ for model in ['source_all', 'target_all', 'source', 'target']:
 
         # For each stratum
         temp_stratum_error_rates = pd.DataFrame()
-        for stratum in site_key['stratum'].unique():
+        for stratum in site_metadata['stratum'].unique():
 
             # Calculate error rate for this species across sites of this stratum
-            stratum_sites = site_key[site_key['stratum'] == stratum]['site']
+            stratum_sites = site_metadata[site_metadata['stratum'] == stratum]['site']
 
             sites_error_stratum = stratum_sites[stratum_sites.isin(sites_error)]
 

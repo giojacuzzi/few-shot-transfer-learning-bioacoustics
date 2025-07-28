@@ -16,19 +16,16 @@
 *.parquet
 
 # Model and training files
+/data/cache/*
+/data/figures/*
+/data/test/*
 /data/training/*
-/data/validation/*
-/data/models/*
 
 # (Exceptions)
-!/data/species/*
-!/data/training/readme.md
-!/data/models/readme.md
-!/data/class_labels.csv
-!/data/site_key.csv
-!/data/test/site_presence_absence.csv
-!/data/test/test_data_annotations.csv
-!/data/figures/fig_labels.csv
+!/data/cache/cache.md
+!/data/figures/figures.md
+!/data/test/test.md
+!/data/training/training.md
 
 # Apple files
 .DS_Store
