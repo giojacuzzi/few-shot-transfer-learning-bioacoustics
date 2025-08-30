@@ -10,8 +10,8 @@ Although this software was initially developed for a particular study region and
 
 ### Prerequisites
 
-- Windows 7+ or MacOS 10.12+ operating system (64-bit). Note that the version of TensorFlow currently used alongside BirdNET is not natively compatible with Apple Silicon.
-- [Python](https://www.python.org/downloads/) 3.9+ 64-bit (3.10 recommended, ensure "Add path to environment variables" is checked during install).
+- Windows 7+, MacOS 10.12+, or Linux operating system (64-bit). Note that the version of TensorFlow (2.15) currently used alongside BirdNET is not natively compatible with Apple Silicon.
+- [Python](https://www.python.org/downloads/) 3.9+ 64-bit (3.9 recommended, ensure "Add path to environment variables" is checked during install).
 
 ### Recommendations
 
