@@ -6,12 +6,14 @@ from CTkMenuBar import *
 
 import asyncio
 import threading
+import traceback
 import os
 import json
 import sys
 import numpy as np
 from typing import Callable, Union
 import process_audio
+from misc.log import *
 
 from multiprocessing import freeze_support
 
@@ -445,33 +447,42 @@ class App(TkinterDnD.Tk):
         calc_predictions = self.switch_calc_predictions.get()
 
         if calc_predictions:
-            process_audio.process(
-                in_path                         = in_path,
-                out_dir_path                    = out_dir_path,
-                rtype                           = out_filetype,
-                target_model_filepath           = target_model_filepath,
-                slist                           = class_labels_filepath, 
-                use_ensemble                    = use_ensemble,
-                ensemble_weights                = ensemble_weights,
-                min_confidence                  = min_confidence,
-                threads                         = threads,
-                cleanup                         = True
-            )
+            try:
+                process_audio.process(
+                    in_path                         = in_path,
+                    out_dir_path                    = out_dir_path,
+                    rtype                           = out_filetype,
+                    target_model_filepath           = target_model_filepath,
+                    slist                           = class_labels_filepath, 
+                    use_ensemble                    = use_ensemble,
+                    ensemble_weights                = ensemble_weights,
+                    min_confidence                  = min_confidence,
+                    threads                         = threads,
+                    cleanup                         = True
+                )
+            except Exception:
+                traceback.print_exc()
+                print_error("Exception encountered during process, see log above")
+                extract_segments = False
 
         extract_segments = self.extract_segments.get()
         seglength = self.spinbox_seglength.get()
 
         if extract_segments:
-            process_audio.segment(
-                in_audio_path = in_path,
-                in_predictions_path = os.path.join(out_dir_path, 'predictions'),
-                extension = extension,
-                out_dir_path = os.path.join(out_dir_path, 'segments'),
-                min_conf = min_confidence,
-                max_segments = np.iinfo(np.int32).max, # no maximum
-                seg_length = seglength,
-                threads = threads
-            )
+            try:
+                process_audio.segment(
+                    in_audio_path = in_path,
+                    in_predictions_path = os.path.join(out_dir_path, 'predictions'),
+                    extension = extension,
+                    out_dir_path = os.path.join(out_dir_path, 'segments'),
+                    min_conf = min_confidence,
+                    max_segments = np.iinfo(np.int32).max, # no maximum
+                    seg_length = seglength,
+                    threads = threads
+                )
+            except Exception:
+                traceback.print_exc()
+                print_error("Exception encountered during segment, see log above")
 
         self.update_idletasks()
 
